@@ -78,6 +78,7 @@ export default async function FinancePage({
                   <th className="px-4 py-3 font-medium">GRN Ref</th>
                   <th className="px-4 py-3 font-medium">WH</th>
                   <th className="px-4 py-3 font-medium">PO Number</th>
+                  <th className="px-4 py-3 font-medium">Invoice No</th>
                   <th className="px-4 py-3 font-medium">Date</th>
                   <th className="px-4 py-3 font-medium">Items</th>
                   <th className="px-4 py-3 font-medium">Photo</th>
@@ -92,6 +93,7 @@ export default async function FinancePage({
                     <td className="px-4 py-3 font-mono font-medium text-zinc-900">{g.grn_ref}</td>
                     <td className="px-4 py-3">{g.warehouse_code}</td>
                     <td className="px-4 py-3">{one(g.purchase_orders)?.po_number ?? "—"}</td>
+                    <td className="px-4 py-3">{g.invoice_no ?? "—"}</td>
                     <td className="px-4 py-3">{g.grn_date}</td>
                     <td className="px-4 py-3">{g.grn_line_items?.length ?? 0}</td>
                     <td className="px-4 py-3">

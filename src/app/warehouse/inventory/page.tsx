@@ -194,22 +194,31 @@ export default async function InventoryPage({
 
           {/* FEFO */}
           {active === "fefo" && (
-            <table className="w-full min-w-[760px] text-sm">
+            <table className="w-full min-w-[860px] text-sm">
               <thead className="bg-zinc-50 text-left text-zinc-500">
-                <tr><th className={th}>#</th><th className={th}>Raw Material</th><th className={th}>Batch</th><th className={th}>Available</th><th className={th}>Expiry</th><th className={th}>Days Left</th><th className={th}>Issue</th></tr>
+                <tr><th className={th}>#</th><th className={th}>Raw Material</th><th className={th}>Batch</th><th className={th}>Available</th><th className={th}>Expiry</th><th className={th}>Days Left</th><th className={th}>Alert</th><th className={th}>Issue</th></tr>
               </thead>
               <tbody>
-                {fefo.length === 0 ? <tr><td className={td} colSpan={7}>No available stock.</td></tr> :
+                {fefo.length === 0 ? <tr><td className={td} colSpan={8}>No available stock.</td></tr> :
                   fefo.map((b, i) => {
                     const dl = daysLeft(b.expiryDate);
+                    // FEFO expiry alert windows
+                    const alert =
+                      dl === null ? null :
+                      dl <= 0 ? { t: "EXPIRED", badge: "bg-zinc-800 text-white", row: "bg-zinc-100" } :
+                      dl <= 30 ? { t: "EXPIRING SOON", badge: "bg-red-600 text-white", row: "bg-red-50" } :
+                      dl <= 60 ? { t: "USE SOON", badge: "bg-amber-500 text-white", row: "bg-amber-50" } :
+                      dl <= 90 ? { t: "≤ 90 days", badge: "bg-yellow-100 text-yellow-800", row: "" } :
+                      null;
                     return (
-                      <tr key={b.id} className="border-t border-zinc-100">
+                      <tr key={b.id} className={`border-t border-zinc-100 ${alert?.row ?? ""}`}>
                         <td className={`${td} text-zinc-400`}>{i + 1}</td>
                         <td className={`${td} font-medium text-zinc-900`}>{b.itemName}</td>
                         <td className={td}>{b.batchNo ?? "—"}</td>
                         <td className={`${td} font-medium`}>{b.available} {b.uom}</td>
                         <td className={td}>{b.expiryDate ?? "—"}</td>
                         <td className={`${td} ${dl !== null && dl <= 30 ? "font-semibold text-red-600" : ""}`}>{dl ?? "—"}</td>
+                        <td className={td}>{alert ? <span className={`rounded px-2 py-0.5 text-xs font-semibold ${alert.badge}`}>{alert.t}</span> : "—"}</td>
                         <td className={td}><IssueButton grnLineItemId={b.id} itemId={b.itemId} available={b.available} /></td>
                       </tr>
                     );
