@@ -17,6 +17,7 @@ type Line = {
   actualQty: string;
   batchNo: string;
   mfgDate: string;
+  shelfLifeMonths: string;
   expiryDate: string;
   damaged: boolean;
   damagedQty: string;
@@ -34,6 +35,14 @@ type PODetails = {
 };
 
 let counter = 0;
+
+// Add N months to a YYYY-MM-DD date string -> YYYY-MM-DD
+function addMonths(dateStr: string, months: number): string {
+  if (!dateStr || !months) return "";
+  const d = new Date(dateStr);
+  d.setMonth(d.getMonth() + months);
+  return d.toISOString().slice(0, 10);
+}
 
 async function uploadFile(folder: string, file: File): Promise<string | null> {
   const supabase = getSupabaseBrowser();
@@ -104,6 +113,7 @@ export default function GRNForm() {
         actualQty: l.expectedQty,
         batchNo: "",
         mfgDate: "",
+        shelfLifeMonths: "",
         expiryDate: "",
         damaged: false,
         damagedQty: "0",
@@ -225,13 +235,24 @@ export default function GRNForm() {
                   <label className="block text-xs font-medium text-zinc-600">Batch / Lot No.</label>
                   <input className={input} value={l.batchNo} onChange={(e) => patch(l.key, { batchNo: e.target.value })} />
                 </div>
-                <div></div>
                 <div>
                   <label className="block text-xs font-medium text-zinc-600">Mfg Date</label>
-                  <input type="date" className={input} value={l.mfgDate} onChange={(e) => patch(l.key, { mfgDate: e.target.value })} />
+                  <input type="date" className={input} value={l.mfgDate}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      patch(l.key, { mfgDate: v, expiryDate: l.shelfLifeMonths ? addMonths(v, Number(l.shelfLifeMonths)) : l.expiryDate });
+                    }} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-zinc-600">Expiry Date</label>
+                  <label className="block text-xs font-medium text-zinc-600">Shelf Life (months)</label>
+                  <input type="number" min="0" step="1" className={input} value={l.shelfLifeMonths} placeholder="e.g. 24"
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      patch(l.key, { shelfLifeMonths: v, expiryDate: l.mfgDate && v ? addMonths(l.mfgDate, Number(v)) : l.expiryDate });
+                    }} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-zinc-600">Expiry Date <span className="text-zinc-400">(auto / editable)</span></label>
                   <input type="date" className={input} value={l.expiryDate} onChange={(e) => patch(l.key, { expiryDate: e.target.value })} />
                 </div>
               </div>
