@@ -1,14 +1,15 @@
 import { createServerClient } from "@supabase/ssr";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
+import { SUPABASE_URL, SUPABASE_ANON_KEY } from "@/lib/supabaseConfig";
 
 // Cookie-aware Supabase client for Server Components, Server Actions and Route Handlers.
 // It carries the logged-in user's session, so all queries run as that user (RLS applies).
 export async function createServerSupabase() {
   const cookieStore = await cookies();
   return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    SUPABASE_URL,
+    SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
