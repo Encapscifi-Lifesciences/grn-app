@@ -35,6 +35,12 @@ const PORTALS: {
     title: "Finance Portal",
     desc: "Review GRNs, set reconciliation status, and export for Odoo.",
   },
+  {
+    role: "admin",
+    href: "/admin",
+    title: "User Management",
+    desc: "Add team members and assign Purchase / Warehouse / Finance roles.",
+  },
 ];
 
 export default async function Home() {
