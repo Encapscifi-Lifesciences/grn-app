@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { requireRole, createServerSupabase } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { RoleSelect } from "./RoleSelect";
+import { AddUserForm } from "./AddUserForm";
 
 export const dynamic = "force-dynamic";
 
@@ -15,11 +15,7 @@ export default async function AdminPage() {
     <div className="flex flex-1 flex-col bg-zinc-100">
       <AppHeader title="User Management" email={user.email} back />
       <main className="mx-auto w-full max-w-3xl flex-1 space-y-4 p-4 sm:p-6">
-        <div className="rounded-xl bg-blue-50 p-4 text-sm text-blue-800">
-          <strong>Add a new user:</strong> in Supabase → Authentication → Users → “Add user”
-          (tick <em>Auto Confirm</em>), then set their role here. They sign in with that
-          email and password.
-        </div>
+        <AddUserForm />
 
         {error && (
           <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700">
