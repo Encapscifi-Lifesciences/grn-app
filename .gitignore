@@ -33,6 +33,9 @@ yarn-error.log*
 # env files (can opt-in for committing if needed)
 .env*
 
+# exported conversation logs
+*-role-objective.txt
+
 # vercel
 .vercel
 
@@ -41,3 +44,5 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+deploy-log.txt
