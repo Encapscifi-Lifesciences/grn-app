@@ -108,3 +108,46 @@ export async function createPO(
   revalidatePath("/purchase");
   return { ok: true };
 }
+
+export async function cancelPO(poId: string, cancelled: boolean) {
+  const { user, role } = await getSessionRole();
+  if (!user || (role !== "purchase" && role !== "admin"))
+    return { ok: false as const, error: "Not authorized." };
+
+  const supabase = await createServerSupabase();
+  const { error } = await supabase
+    .from("purchase_orders")
+    .update({ cancelled })
+    .eq("id", poId);
+  if (error) return { ok: false as const, error: error.message };
+
+  revalidatePath("/purchase");
+  return { ok: true as const };
+}
+
+export async function deletePO(poId: string) {
+  const { user, role } = await getSessionRole();
+  if (!user || (role !== "purchase" && role !== "admin"))
+    return { ok: false as const, error: "Not authorized." };
+
+  const supabase = await createServerSupabase();
+
+  // Block deletion if a GRN already references this PO
+  const { data: grns } = await supabase
+    .from("grns")
+    .select("id")
+    .eq("po_id", poId)
+    .limit(1);
+  if (grns && grns.length > 0) {
+    return {
+      ok: false as const,
+      error: "Cannot delete — a GRN already exists for this PO. Cancel it instead.",
+    };
+  }
+
+  const { error } = await supabase.from("purchase_orders").delete().eq("id", poId);
+  if (error) return { ok: false as const, error: error.message };
+
+  revalidatePath("/purchase");
+  return { ok: true as const };
+}
