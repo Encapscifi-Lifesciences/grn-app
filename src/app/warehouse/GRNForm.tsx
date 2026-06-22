@@ -30,6 +30,7 @@ type PODetails = {
   paymentTerms: string;
   shipTo: string;
   vendorName: string;
+  manufacturer: string;
 };
 
 let counter = 0;
@@ -89,6 +90,7 @@ export default function GRNForm() {
       paymentTerms: res.po.paymentTerms,
       shipTo: res.po.shipTo,
       vendorName: res.po.vendorName,
+      manufacturer: res.po.manufacturer,
     });
     setLines(
       res.po.lines.map((l: any) => ({
@@ -182,6 +184,7 @@ export default function GRNForm() {
         {po && (
           <div className="mt-4 grid gap-2 rounded-lg bg-zinc-50 p-4 text-sm sm:grid-cols-2">
             <div><span className="text-zinc-500">Vendor:</span> <span className="font-medium">{po.vendorName || "—"}</span></div>
+            <div><span className="text-zinc-500">Manufacturer:</span> <span className="font-medium">{po.manufacturer || "—"}</span></div>
             <div><span className="text-zinc-500">PO Date:</span> {po.poDate || "—"}</div>
             <div><span className="text-zinc-500">Delivery Date:</span> {po.deliveryDate || "—"}</div>
             <div><span className="text-zinc-500">Payment Terms:</span> {po.paymentTerms || "—"}</div>

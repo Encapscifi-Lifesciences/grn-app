@@ -13,6 +13,7 @@ export type POLineInput = {
 export type POInput = {
   poNumber: string;
   vendorName: string;
+  manufacturer: string;
   poDate: string;
   deliveryDate: string;
   paymentTerms: string;
@@ -61,6 +62,7 @@ export async function createPO(
     .insert({
       po_number: poNumber,
       vendor_id: vendor.id,
+      manufacturer: input.manufacturer || null,
       po_date: input.poDate,
       delivery_date: input.deliveryDate || null,
       payment_terms: input.paymentTerms || null,

@@ -49,6 +49,7 @@ export default function POForm({
 
   const [poNumber, setPoNumber] = useState("");
   const [vendorName, setVendorName] = useState("");
+  const [manufacturer, setManufacturer] = useState("");
   const [poDate, setPoDate] = useState(() => new Date().toISOString().slice(0, 10));
   const [deliveryDate, setDeliveryDate] = useState("");
   const [paymentTerms, setPaymentTerms] = useState("");
@@ -105,7 +106,7 @@ export default function POForm({
     setBusy(true);
     setMessage(null);
     const res = await createPO({
-      poNumber, vendorName, poDate, deliveryDate, paymentTerms, shipTo, notes,
+      poNumber, vendorName, manufacturer, poDate, deliveryDate, paymentTerms, shipTo, notes,
       source: "manual",
       lines: lines.map((l) => ({
         itemName: l.itemName,
@@ -117,7 +118,7 @@ export default function POForm({
     setBusy(false);
     if (res.ok) {
       setMessage({ ok: true, text: `PO "${poNumber}" saved.` });
-      setPoNumber(""); setVendorName(""); setDeliveryDate(""); setPaymentTerms("");
+      setPoNumber(""); setVendorName(""); setManufacturer(""); setDeliveryDate(""); setPaymentTerms("");
       setShipTo(""); setNotes(""); setLines([newLine(defaultUom)]);
       router.refresh();
     } else {
@@ -151,6 +152,10 @@ export default function POForm({
           <label className="block text-sm font-medium text-zinc-700">Vendor</label>
           <input className={input} list="vendor-list" value={vendorName} onChange={(e) => setVendorName(e.target.value)} placeholder="Type or pick a vendor" required />
           <datalist id="vendor-list">{vendors.map((v) => <option key={v.id} value={v.name} />)}</datalist>
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-zinc-700">Manufacturer</label>
+          <input className={input} value={manufacturer} onChange={(e) => setManufacturer(e.target.value)} placeholder="Manufacturer name" />
         </div>
         <div>
           <label className="block text-sm font-medium text-zinc-700">PO Date</label>

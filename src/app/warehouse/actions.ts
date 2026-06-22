@@ -26,7 +26,7 @@ export async function fetchPO(poNumber: string) {
   const { data: po, error } = await supabase
     .from("purchase_orders")
     .select(
-      "id, po_number, po_date, delivery_date, payment_terms, ship_to, notes, " +
+      "id, po_number, manufacturer, po_date, delivery_date, payment_terms, ship_to, notes, " +
         "vendors(name), " +
         "po_line_items(id, expected_qty, rate, item_id, items(name), uoms(id, code))"
     )
@@ -52,6 +52,7 @@ export async function fetchPO(poNumber: string) {
     po: {
       id: p.id,
       poNumber: p.po_number,
+      manufacturer: p.manufacturer ?? "",
       poDate: p.po_date ?? "",
       deliveryDate: p.delivery_date ?? "",
       paymentTerms: p.payment_terms ?? "",
