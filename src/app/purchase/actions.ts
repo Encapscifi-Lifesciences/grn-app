@@ -7,12 +7,17 @@ export type POLineInput = {
   itemName: string;
   expectedQty: number;
   uomId: string;
+  rate: number;
 };
 
 export type POInput = {
   poNumber: string;
   vendorName: string;
   poDate: string;
+  deliveryDate: string;
+  paymentTerms: string;
+  shipTo: string;
+  notes: string;
   source?: "manual" | "pdf";
   lines: POLineInput[];
 };
@@ -20,7 +25,6 @@ export type POInput = {
 export async function createPO(
   input: POInput
 ): Promise<{ ok: boolean; error?: string }> {
-  // Authorization — Server Actions are callable directly, so verify here too.
   const { user, role } = await getSessionRole();
   if (!user || (role !== "purchase" && role !== "admin")) {
     return { ok: false, error: "Not authorized." };
@@ -28,7 +32,6 @@ export async function createPO(
 
   const supabase = await createServerSupabase();
 
-  // Validation
   const poNumber = input.poNumber?.trim();
   const vendorName = input.vendorName?.trim();
   if (!poNumber) return { ok: false, error: "PO Number is required." };
@@ -42,7 +45,7 @@ export async function createPO(
     return { ok: false, error: "Add at least one line item with a quantity." };
   }
 
-  // 1. Upsert vendor (master list grows automatically)
+  // Vendor (master list)
   const { data: vendor, error: vErr } = await supabase
     .from("vendors")
     .upsert({ name: vendorName }, { onConflict: "name" })
@@ -52,13 +55,17 @@ export async function createPO(
     return { ok: false, error: `Vendor error: ${vErr?.message ?? "unknown"}` };
   }
 
-  // 2. Create the PO header
+  // PO header
   const { data: po, error: poErr } = await supabase
     .from("purchase_orders")
     .insert({
       po_number: poNumber,
       vendor_id: vendor.id,
       po_date: input.poDate,
+      delivery_date: input.deliveryDate || null,
+      payment_terms: input.paymentTerms || null,
+      ship_to: input.shipTo || null,
+      notes: input.notes || null,
       source: input.source ?? "manual",
     })
     .select("id")
@@ -70,10 +77,8 @@ export async function createPO(
     return { ok: false, error: `PO error: ${poErr?.message ?? "unknown"}` };
   }
 
-  // 3. Upsert all distinct items in one call (master list grows automatically)
-  const distinctNames = Array.from(
-    new Set(lines.map((l) => l.itemName.trim()))
-  );
+  // Items (master list)
+  const distinctNames = Array.from(new Set(lines.map((l) => l.itemName.trim())));
   const { data: items, error: iErr } = await supabase
     .from("items")
     .upsert(
@@ -86,16 +91,14 @@ export async function createPO(
   }
   const itemIdByName = new Map(items.map((i) => [i.name, i.id]));
 
-  // 4. Insert all line items in one call
   const lineRows = lines.map((l) => ({
     po_id: po.id,
     item_id: itemIdByName.get(l.itemName.trim()),
     expected_qty: Number(l.expectedQty),
     uom_id: l.uomId,
+    rate: Number(l.rate) || null,
   }));
-  const { error: liErr } = await supabase
-    .from("po_line_items")
-    .insert(lineRows);
+  const { error: liErr } = await supabase.from("po_line_items").insert(lineRows);
   if (liErr) {
     return { ok: false, error: `Line items error: ${liErr.message}` };
   }

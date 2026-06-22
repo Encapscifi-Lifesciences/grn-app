@@ -13,11 +13,12 @@ type Line = {
   itemName: string;
   expectedQty: string;
   uomId: string;
+  rate: string;
 };
 
 let lineCounter = 0;
 function newLine(defaultUomId: string): Line {
-  return { key: ++lineCounter, itemName: "", expectedQty: "", uomId: defaultUomId };
+  return { key: ++lineCounter, itemName: "", expectedQty: "", uomId: defaultUomId, rate: "" };
 }
 
 export default function POForm({
@@ -32,7 +33,6 @@ export default function POForm({
   const router = useRouter();
   const defaultUom = uoms[0]?.id ?? "";
 
-  // Map common UOM spellings -> a uom id, for PDF-parsed rows
   const uomByCode = new Map<string, string>();
   for (const u of uoms) uomByCode.set(u.code.toLowerCase(), u.id);
   const aliasUom = (raw: string): string => {
@@ -50,6 +50,10 @@ export default function POForm({
   const [poNumber, setPoNumber] = useState("");
   const [vendorName, setVendorName] = useState("");
   const [poDate, setPoDate] = useState(() => new Date().toISOString().slice(0, 10));
+  const [deliveryDate, setDeliveryDate] = useState("");
+  const [paymentTerms, setPaymentTerms] = useState("");
+  const [shipTo, setShipTo] = useState("");
+  const [notes, setNotes] = useState("");
   const [lines, setLines] = useState<Line[]>([newLine(defaultUom)]);
   const [busy, setBusy] = useState(false);
   const [parsing, setParsing] = useState(false);
@@ -73,11 +77,7 @@ export default function POForm({
       fd.append("file", file);
       const res = await fetch("/api/parse-po", { method: "POST", body: fd });
       const data = await res.json();
-      if (data.error) {
-        setMessage({ ok: false, text: data.error });
-        setParsing(false);
-        return;
-      }
+      if (data.error) { setMessage({ ok: false, text: data.error }); setParsing(false); return; }
       if (data.poNumber) setPoNumber(data.poNumber);
       if (data.vendorName) setVendorName(data.vendorName);
       if (Array.isArray(data.lines) && data.lines.length > 0) {
@@ -87,6 +87,7 @@ export default function POForm({
             itemName: l.itemName,
             expectedQty: String(l.expectedQty),
             uomId: aliasUom(l.uom),
+            rate: "",
           }))
         );
         setMessage({ ok: true, text: `Extracted ${data.lines.length} item(s) — please review before saving.` });
@@ -104,22 +105,20 @@ export default function POForm({
     setBusy(true);
     setMessage(null);
     const res = await createPO({
-      poNumber,
-      vendorName,
-      poDate,
+      poNumber, vendorName, poDate, deliveryDate, paymentTerms, shipTo, notes,
       source: "manual",
       lines: lines.map((l) => ({
         itemName: l.itemName,
         expectedQty: Number(l.expectedQty),
         uomId: l.uomId,
+        rate: Number(l.rate),
       })),
     });
     setBusy(false);
     if (res.ok) {
       setMessage({ ok: true, text: `PO "${poNumber}" saved.` });
-      setPoNumber("");
-      setVendorName("");
-      setLines([newLine(defaultUom)]);
+      setPoNumber(""); setVendorName(""); setDeliveryDate(""); setPaymentTerms("");
+      setShipTo(""); setNotes(""); setLines([newLine(defaultUom)]);
       router.refresh();
     } else {
       setMessage({ ok: false, text: res.error ?? "Something went wrong." });
@@ -136,19 +135,10 @@ export default function POForm({
         <label className="block text-sm font-medium text-zinc-700">
           Option B — Upload PO PDF (auto-fills the form below)
         </label>
-        <input
-          type="file"
-          accept="application/pdf"
-          className="mt-2 text-sm"
-          onChange={(e) => {
-            const f = e.target.files?.[0];
-            if (f) onPdf(f);
-          }}
-        />
+        <input type="file" accept="application/pdf" className="mt-2 text-sm"
+          onChange={(e) => { const f = e.target.files?.[0]; if (f) onPdf(f); }} />
         {parsing && <p className="mt-1 text-xs text-zinc-500">Reading PDF…</p>}
-        <p className="mt-1 text-xs text-zinc-400">
-          Or just fill in the fields manually below (Option A).
-        </p>
+        <p className="mt-1 text-xs text-zinc-400">Or fill in the fields manually below (Option A).</p>
       </div>
 
       {/* Header fields */}
@@ -160,13 +150,27 @@ export default function POForm({
         <div>
           <label className="block text-sm font-medium text-zinc-700">Vendor</label>
           <input className={input} list="vendor-list" value={vendorName} onChange={(e) => setVendorName(e.target.value)} placeholder="Type or pick a vendor" required />
-          <datalist id="vendor-list">
-            {vendors.map((v) => <option key={v.id} value={v.name} />)}
-          </datalist>
+          <datalist id="vendor-list">{vendors.map((v) => <option key={v.id} value={v.name} />)}</datalist>
         </div>
         <div>
           <label className="block text-sm font-medium text-zinc-700">PO Date</label>
           <input type="date" className={input} value={poDate} onChange={(e) => setPoDate(e.target.value)} required />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-zinc-700">Expected Delivery Date</label>
+          <input type="date" className={input} value={deliveryDate} onChange={(e) => setDeliveryDate(e.target.value)} />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-zinc-700">Payment Terms</label>
+          <input className={input} value={paymentTerms} onChange={(e) => setPaymentTerms(e.target.value)} placeholder="e.g. Net 30" />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-zinc-700">Ship To / Location</label>
+          <input className={input} value={shipTo} onChange={(e) => setShipTo(e.target.value)} placeholder="Warehouse / address" />
+        </div>
+        <div className="sm:col-span-3">
+          <label className="block text-sm font-medium text-zinc-700">Notes</label>
+          <input className={input} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Any special instructions" />
         </div>
       </div>
 
@@ -174,17 +178,16 @@ export default function POForm({
       <div className="mt-6">
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-sm font-semibold text-zinc-900">Line Items</h3>
-          <button type="button" onClick={addLine} className="rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700">
-            + Add Line Item
-          </button>
+          <button type="button" onClick={addLine} className="rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700">+ Add Line Item</button>
         </div>
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[640px] border-collapse text-sm">
+          <table className="w-full min-w-[720px] border-collapse text-sm">
             <thead>
               <tr className="text-left text-zinc-500">
                 <th className="py-2 pr-3 font-medium">Item</th>
                 <th className="py-2 pr-3 font-medium">Expected Qty</th>
                 <th className="py-2 pr-3 font-medium">UOM</th>
+                <th className="py-2 pr-3 font-medium">Rate (₹)</th>
                 <th className="py-2 font-medium"></th>
               </tr>
             </thead>
@@ -202,6 +205,9 @@ export default function POForm({
                       {uoms.map((u) => <option key={u.id} value={u.id}>{u.code}</option>)}
                     </select>
                   </td>
+                  <td className="py-2 pr-3">
+                    <input type="number" step="any" min="0" className={input} value={l.rate} onChange={(e) => updateLine(l.key, { rate: e.target.value })} placeholder="0.00" />
+                  </td>
                   <td className="py-2 text-right">
                     <button type="button" onClick={() => removeLine(l.key)} className="rounded-lg px-2 py-1 text-zinc-400 hover:bg-red-50 hover:text-red-600" aria-label="Remove line">✕</button>
                   </td>
@@ -210,15 +216,11 @@ export default function POForm({
             </tbody>
           </table>
         </div>
-        <datalist id="item-list">
-          {items.map((i) => <option key={i.id} value={i.name} />)}
-        </datalist>
+        <datalist id="item-list">{items.map((i) => <option key={i.id} value={i.name} />)}</datalist>
       </div>
 
       {message && (
-        <p className={`mt-4 rounded-lg px-3 py-2 text-sm ${message.ok ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
-          {message.text}
-        </p>
+        <p className={`mt-4 rounded-lg px-3 py-2 text-sm ${message.ok ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>{message.text}</p>
       )}
 
       <div className="mt-6 flex justify-end">

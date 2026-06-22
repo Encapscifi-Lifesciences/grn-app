@@ -18,10 +18,18 @@ type Line = {
   batchNo: string;
   mfgDate: string;
   expiryDate: string;
-  expired: boolean;
-  expiryProofUrl: string;
+  damaged: boolean;
   damagedQty: string;
   damageReason: string;
+  damageProofUrl: string;
+};
+
+type PODetails = {
+  poDate: string;
+  deliveryDate: string;
+  paymentTerms: string;
+  shipTo: string;
+  vendorName: string;
 };
 
 let counter = 0;
@@ -41,7 +49,7 @@ export default function GRNForm() {
   const [grnRef, setGrnRef] = useState("");
   const [poNumber, setPoNumber] = useState("");
   const [poId, setPoId] = useState("");
-  const [vendorName, setVendorName] = useState("");
+  const [po, setPo] = useState<PODetails | null>(null);
   const [invoiceNo, setInvoiceNo] = useState("");
   const [challanNo, setChallanNo] = useState("");
   const [attachmentUrl, setAttachmentUrl] = useState("");
@@ -71,12 +79,17 @@ export default function GRNForm() {
     setFetching(false);
     if (!res.ok) {
       setMsg({ ok: false, text: res.error });
-      setLines([]);
-      setPoId("");
+      setLines([]); setPoId(""); setPo(null);
       return;
     }
     setPoId(res.po.id);
-    setVendorName(res.po.vendorName);
+    setPo({
+      poDate: res.po.poDate,
+      deliveryDate: res.po.deliveryDate,
+      paymentTerms: res.po.paymentTerms,
+      shipTo: res.po.shipTo,
+      vendorName: res.po.vendorName,
+    });
     setLines(
       res.po.lines.map((l: any) => ({
         key: ++counter,
@@ -90,10 +103,10 @@ export default function GRNForm() {
         batchNo: "",
         mfgDate: "",
         expiryDate: "",
-        expired: false,
-        expiryProofUrl: "",
+        damaged: false,
         damagedQty: "0",
         damageReason: "",
+        damageProofUrl: "",
       }))
     );
   }
@@ -107,12 +120,7 @@ export default function GRNForm() {
     setBusy(true);
     setMsg(null);
     const res = await createGRN({
-      warehouseCode,
-      grnRef,
-      poId,
-      invoiceNo,
-      challanNo,
-      attachmentUrl,
+      warehouseCode, grnRef, poId, invoiceNo, challanNo, attachmentUrl,
       lines: lines.map((l) => ({
         poLineItemId: l.poLineItemId,
         itemId: l.itemId,
@@ -122,16 +130,15 @@ export default function GRNForm() {
         batchNo: l.batchNo,
         mfgDate: l.mfgDate,
         expiryDate: l.expiryDate,
-        expired: l.expired,
-        expiryProofUrl: l.expiryProofUrl,
-        damagedQty: Number(l.damagedQty),
-        damageReason: l.damageReason,
+        damagedQty: l.damaged ? Number(l.damagedQty) : 0,
+        damageReason: l.damaged ? l.damageReason : "",
+        damageProofUrl: l.damaged ? l.damageProofUrl : "",
       })),
     });
     setBusy(false);
     if (res.ok) {
       setMsg({ ok: true, text: `GRN ${res.grnRef} saved (status: ${res.status}).` });
-      setPoNumber(""); setPoId(""); setVendorName(""); setInvoiceNo("");
+      setPoNumber(""); setPoId(""); setPo(null); setInvoiceNo("");
       setChallanNo(""); setAttachmentUrl(""); setLines([]);
       setWarehouseCode(""); setGrnRef("");
       router.refresh();
@@ -147,12 +154,7 @@ export default function GRNForm() {
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="block text-sm font-medium text-zinc-700">Warehouse</label>
-            <select
-              className={input}
-              value={warehouseCode}
-              onChange={(e) => onWarehouseChange(e.target.value)}
-              required
-            >
+            <select className={input} value={warehouseCode} onChange={(e) => onWarehouseChange(e.target.value)} required>
               <option value="">Select warehouse…</option>
               <option value="WH1">Warehouse 1 (WH1)</option>
               <option value="WH2">Warehouse 2 (WH2)</option>
@@ -165,29 +167,40 @@ export default function GRNForm() {
           <div className="sm:col-span-2">
             <label className="block text-sm font-medium text-zinc-700">PO Number</label>
             <div className="flex gap-2">
-              <input
-                className={input}
-                value={poNumber}
-                onChange={(e) => setPoNumber(e.target.value)}
+              <input className={input} value={poNumber} onChange={(e) => setPoNumber(e.target.value)}
                 onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onFetchPO(); } }}
-                placeholder="Enter PO number, then Fetch"
-              />
+                placeholder="Enter PO number, then Fetch" />
               <button type="button" onClick={onFetchPO} disabled={fetching}
                 className="shrink-0 rounded-lg bg-zinc-900 px-4 py-2 font-medium text-white hover:bg-zinc-700 disabled:opacity-50">
                 {fetching ? "Fetching…" : "Fetch"}
               </button>
             </div>
-            {vendorName && <p className="mt-1 text-sm text-zinc-500">Vendor: {vendorName}</p>}
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-zinc-700">Invoice No.</label>
-            <input className={input} value={invoiceNo} onChange={(e) => setInvoiceNo(e.target.value)} />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-zinc-700">Challan No.</label>
-            <input className={input} value={challanNo} onChange={(e) => setChallanNo(e.target.value)} />
           </div>
         </div>
+
+        {/* Fetched PO details */}
+        {po && (
+          <div className="mt-4 grid gap-2 rounded-lg bg-zinc-50 p-4 text-sm sm:grid-cols-2">
+            <div><span className="text-zinc-500">Vendor:</span> <span className="font-medium">{po.vendorName || "—"}</span></div>
+            <div><span className="text-zinc-500">PO Date:</span> {po.poDate || "—"}</div>
+            <div><span className="text-zinc-500">Delivery Date:</span> {po.deliveryDate || "—"}</div>
+            <div><span className="text-zinc-500">Payment Terms:</span> {po.paymentTerms || "—"}</div>
+            <div className="sm:col-span-2"><span className="text-zinc-500">Ship To:</span> {po.shipTo || "—"}</div>
+          </div>
+        )}
+
+        {lines.length > 0 && (
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <div>
+              <label className="block text-sm font-medium text-zinc-700">Invoice No.</label>
+              <input className={input} value={invoiceNo} onChange={(e) => setInvoiceNo(e.target.value)} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-zinc-700">Challan No.</label>
+              <input className={input} value={challanNo} onChange={(e) => setChallanNo(e.target.value)} />
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Line items */}
@@ -203,18 +216,13 @@ export default function GRNForm() {
               <div className="grid gap-3 sm:grid-cols-3">
                 <div>
                   <label className="block text-xs font-medium text-zinc-600">Actual Qty Received</label>
-                  <input type="number" step="any" min="0" className={input} value={l.actualQty}
-                    onChange={(e) => patch(l.key, { actualQty: e.target.value })} />
+                  <input type="number" step="any" min="0" className={input} value={l.actualQty} onChange={(e) => patch(l.key, { actualQty: e.target.value })} />
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-zinc-600">Batch / Lot No.</label>
                   <input className={input} value={l.batchNo} onChange={(e) => patch(l.key, { batchNo: e.target.value })} />
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-zinc-600">Damaged Qty</label>
-                  <input type="number" step="any" min="0" className={input} value={l.damagedQty}
-                    onChange={(e) => patch(l.key, { damagedQty: e.target.value })} />
-                </div>
+                <div></div>
                 <div>
                   <label className="block text-xs font-medium text-zinc-600">Mfg Date</label>
                   <input type="date" className={input} value={l.mfgDate} onChange={(e) => patch(l.key, { mfgDate: e.target.value })} />
@@ -223,33 +231,37 @@ export default function GRNForm() {
                   <label className="block text-xs font-medium text-zinc-600">Expiry Date</label>
                   <input type="date" className={input} value={l.expiryDate} onChange={(e) => patch(l.key, { expiryDate: e.target.value })} />
                 </div>
-                <div>
-                  <label className="block text-xs font-medium text-zinc-600">Damage Reason</label>
-                  <input className={input} value={l.damageReason} placeholder="e.g. 2 bags torn"
-                    onChange={(e) => patch(l.key, { damageReason: e.target.value })} />
-                </div>
               </div>
 
-              {/* Expired flag + proof */}
-              <div className="mt-3 rounded-lg bg-amber-50 p-3">
-                <label className="flex items-center gap-2 text-sm font-medium text-amber-900">
-                  <input type="checkbox" checked={l.expired}
-                    onChange={(e) => patch(l.key, { expired: e.target.checked })} />
-                  Item is expired
+              {/* Damaged condition */}
+              <div className="mt-3 rounded-lg bg-red-50 p-3">
+                <label className="flex items-center gap-2 text-sm font-medium text-red-900">
+                  <input type="checkbox" checked={l.damaged} onChange={(e) => patch(l.key, { damaged: e.target.checked })} />
+                  Goods damaged / rejected
                 </label>
-                {l.expired && (
-                  <div className="mt-2">
-                    <label className="block text-xs font-medium text-amber-800">Expiry proof (photo)</label>
-                    <input type="file" accept="image/*" capture="environment" className="mt-1 text-sm"
-                      onChange={async (e) => {
-                        const f = e.target.files?.[0];
-                        if (f) {
-                          const url = await uploadFile(`expiry/${l.key}`, f);
-                          if (url) patch(l.key, { expiryProofUrl: url });
-                          else setMsg({ ok: false, text: "Photo upload failed." });
-                        }
-                      }} />
-                    {l.expiryProofUrl && <p className="mt-1 text-xs text-green-700">✓ proof uploaded</p>}
+                {l.damaged && (
+                  <div className="mt-2 grid gap-3 sm:grid-cols-2">
+                    <div>
+                      <label className="block text-xs font-medium text-red-800">Damaged Qty</label>
+                      <input type="number" step="any" min="0" className={input} value={l.damagedQty} onChange={(e) => patch(l.key, { damagedQty: e.target.value })} />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-medium text-red-800">Reason</label>
+                      <input className={input} value={l.damageReason} placeholder="e.g. 2 bags torn" onChange={(e) => patch(l.key, { damageReason: e.target.value })} />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className="block text-xs font-medium text-red-800">Damage proof (photo)</label>
+                      <input type="file" accept="image/*" capture="environment" className="mt-1 text-sm"
+                        onChange={async (e) => {
+                          const f = e.target.files?.[0];
+                          if (f) {
+                            const url = await uploadFile(`damage/${l.key}`, f);
+                            if (url) patch(l.key, { damageProofUrl: url });
+                            else setMsg({ ok: false, text: "Photo upload failed." });
+                          }
+                        }} />
+                      {l.damageProofUrl && <p className="mt-1 text-xs text-green-700">✓ proof uploaded</p>}
+                    </div>
                   </div>
                 )}
               </div>
@@ -261,9 +273,7 @@ export default function GRNForm() {
       {/* Form-level attachment */}
       {lines.length > 0 && (
         <div className="rounded-xl bg-white p-5 shadow-sm">
-          <label className="block text-sm font-medium text-zinc-700">
-            Delivery Challan / Damage Photo
-          </label>
+          <label className="block text-sm font-medium text-zinc-700">Delivery Challan Photo</label>
           <input type="file" accept="image/*" capture="environment" className="mt-1 text-sm"
             onChange={async (e) => {
               const f = e.target.files?.[0];
@@ -278,15 +288,12 @@ export default function GRNForm() {
       )}
 
       {msg && (
-        <p className={`rounded-lg px-3 py-2 text-sm ${msg.ok ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>
-          {msg.text}
-        </p>
+        <p className={`rounded-lg px-3 py-2 text-sm ${msg.ok ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>{msg.text}</p>
       )}
 
       {lines.length > 0 && (
         <div className="flex justify-end">
-          <button type="submit" disabled={busy}
-            className="rounded-lg bg-zinc-900 px-5 py-2.5 font-medium text-white hover:bg-zinc-700 disabled:opacity-50">
+          <button type="submit" disabled={busy} className="rounded-lg bg-zinc-900 px-5 py-2.5 font-medium text-white hover:bg-zinc-700 disabled:opacity-50">
             {busy ? "Saving…" : "Submit GRN"}
           </button>
         </div>

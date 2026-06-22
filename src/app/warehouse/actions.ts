@@ -20,13 +20,15 @@ export async function generateGrnRef(warehouseCode: string) {
   return { ok: true as const, grnRef: data as string };
 }
 
-// Fetch a PO and all its line items for the GRN form
+// Fetch a PO header + all its line items for the GRN form
 export async function fetchPO(poNumber: string) {
   const supabase = await createServerSupabase();
   const { data: po, error } = await supabase
     .from("purchase_orders")
     .select(
-      "id, po_number, vendors(name), po_line_items(id, expected_qty, item_id, items(name), uoms(id, code))"
+      "id, po_number, po_date, delivery_date, payment_terms, ship_to, notes, " +
+        "vendors(name), " +
+        "po_line_items(id, expected_qty, rate, item_id, items(name), uoms(id, code))"
     )
     .eq("po_number", poNumber.trim())
     .maybeSingle();
@@ -34,11 +36,13 @@ export async function fetchPO(poNumber: string) {
   if (error) return { ok: false as const, error: error.message };
   if (!po) return { ok: false as const, error: `PO "${poNumber}" not found.` };
 
-  const lines = (po as any).po_line_items.map((l: any) => ({
+  const p = po as any;
+  const lines = p.po_line_items.map((l: any) => ({
     poLineItemId: l.id,
     itemId: l.item_id,
     itemName: one(l.items)?.name ?? "",
     expectedQty: String(l.expected_qty),
+    rate: l.rate != null ? String(l.rate) : "",
     uomId: one(l.uoms)?.id ?? "",
     uomCode: one(l.uoms)?.code ?? "",
   }));
@@ -46,9 +50,14 @@ export async function fetchPO(poNumber: string) {
   return {
     ok: true as const,
     po: {
-      id: (po as any).id,
-      poNumber: (po as any).po_number,
-      vendorName: one((po as any).vendors)?.name ?? "",
+      id: p.id,
+      poNumber: p.po_number,
+      poDate: p.po_date ?? "",
+      deliveryDate: p.delivery_date ?? "",
+      paymentTerms: p.payment_terms ?? "",
+      shipTo: p.ship_to ?? "",
+      notes: p.notes ?? "",
+      vendorName: one(p.vendors)?.name ?? "",
       lines,
     },
   };
@@ -63,10 +72,9 @@ export type GRNLineInput = {
   batchNo: string;
   mfgDate: string;
   expiryDate: string;
-  expired: boolean;
-  expiryProofUrl: string;
   damagedQty: number;
   damageReason: string;
+  damageProofUrl: string;
 };
 
 export type GRNInput = {
@@ -89,12 +97,8 @@ export async function createGRN(input: GRNInput) {
   if (!input.poId) return { ok: false as const, error: "Fetch a PO first." };
   if (!input.lines?.length) return { ok: false as const, error: "No line items to record." };
 
-  // Discrepancy if any received qty differs from expected, or items are damaged/expired
   const discrepancy = input.lines.some(
-    (l) =>
-      Number(l.actualQty) !== Number(l.expectedQty) ||
-      l.expired ||
-      Number(l.damagedQty) > 0
+    (l) => Number(l.actualQty) !== Number(l.expectedQty) || Number(l.damagedQty) > 0
   );
   const status = discrepancy ? "discrepancy" : "pending_review";
 
@@ -129,10 +133,10 @@ export async function createGRN(input: GRNInput) {
     batch_no: l.batchNo || null,
     mfg_date: l.mfgDate || null,
     expiry_date: l.expiryDate || null,
-    expired: !!l.expired,
-    expiry_proof_url: l.expiryProofUrl || null,
+    expired: false,
     damaged_qty: Number(l.damagedQty) || 0,
     damage_reason: l.damageReason || null,
+    damage_proof_url: l.damageProofUrl || null,
   }));
 
   const { error: lErr } = await supabase.from("grn_line_items").insert(rows);
@@ -140,5 +144,6 @@ export async function createGRN(input: GRNInput) {
 
   revalidatePath("/finance");
   revalidatePath("/warehouse");
+  revalidatePath("/warehouse/inventory");
   return { ok: true as const, grnRef: input.grnRef, status };
 }

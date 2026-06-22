@@ -24,6 +24,12 @@ const PORTALS: {
     desc: "Generate GRNs when goods arrive, with batch, expiry and photo proof.",
   },
   {
+    role: "warehouse",
+    href: "/warehouse/inventory",
+    title: "Inventory",
+    desc: "Track received raw materials, view stock, and mark expired items.",
+  },
+  {
     role: "finance",
     href: "/finance",
     title: "Finance Portal",
