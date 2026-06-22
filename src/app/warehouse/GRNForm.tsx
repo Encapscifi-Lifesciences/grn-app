@@ -1,10 +1,10 @@
 "use client";
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowser } from "@/lib/supabaseClient";
-import { generateGrnRef, fetchPO, createGRN } from "./actions";
+import { generateGrnRef, fetchPO, createGRN, listOpenPOs } from "./actions";
 
 type Line = {
   key: number;
@@ -44,6 +44,17 @@ function addMonths(dateStr: string, months: number): string {
   return d.toISOString().slice(0, 10);
 }
 
+// Whole months between two YYYY-MM-DD dates (mfg -> expiry) as a string, "" if invalid
+function monthsBetween(from: string, to: string): string {
+  if (!from || !to) return "";
+  const a = new Date(from);
+  const b = new Date(to);
+  if (isNaN(a.getTime()) || isNaN(b.getTime()) || b < a) return "";
+  let months = (b.getFullYear() - a.getFullYear()) * 12 + (b.getMonth() - a.getMonth());
+  if (b.getDate() < a.getDate()) months -= 1;
+  return months >= 0 ? String(months) : "";
+}
+
 async function uploadFile(folder: string, file: File): Promise<string | null> {
   const supabase = getSupabaseBrowser();
   const safe = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
@@ -58,6 +69,7 @@ export default function GRNForm() {
   const [warehouseCode, setWarehouseCode] = useState("");
   const [grnRef, setGrnRef] = useState("");
   const [poNumber, setPoNumber] = useState("");
+  const [poOptions, setPoOptions] = useState<{ poNumber: string; vendorName: string }[]>([]);
   const [poId, setPoId] = useState("");
   const [po, setPo] = useState<PODetails | null>(null);
   const [invoiceNo, setInvoiceNo] = useState("");
@@ -71,6 +83,13 @@ export default function GRNForm() {
   const input =
     "w-full rounded-lg border border-zinc-300 px-3 py-2 text-zinc-900 outline-none focus:border-zinc-900";
 
+  // Load the list of uploaded POs for the dropdown
+  useEffect(() => {
+    listOpenPOs().then((res) => {
+      if (res.ok) setPoOptions(res.pos);
+    });
+  }, []);
+
   async function onWarehouseChange(code: string) {
     setWarehouseCode(code);
     setGrnRef("");
@@ -81,11 +100,12 @@ export default function GRNForm() {
     }
   }
 
-  async function onFetchPO() {
-    if (!poNumber.trim()) return;
+  async function onFetchPO(numberOverride?: string) {
+    const num = (numberOverride ?? poNumber).trim();
+    if (!num) return;
     setFetching(true);
     setMsg(null);
-    const res = await fetchPO(poNumber);
+    const res = await fetchPO(num);
     setFetching(false);
     if (!res.ok) {
       setMsg({ ok: false, text: res.error });
@@ -178,15 +198,27 @@ export default function GRNForm() {
           </div>
           <div className="sm:col-span-2">
             <label className="block text-sm font-medium text-zinc-700">PO Number</label>
-            <div className="flex gap-2">
-              <input className={input} value={poNumber} onChange={(e) => setPoNumber(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); onFetchPO(); } }}
-                placeholder="Enter PO number, then Fetch" />
-              <button type="button" onClick={onFetchPO} disabled={fetching}
-                className="shrink-0 rounded-lg bg-zinc-900 px-4 py-2 font-medium text-white hover:bg-zinc-700 disabled:opacity-50">
-                {fetching ? "Fetching…" : "Fetch"}
-              </button>
-            </div>
+            <select
+              className={input}
+              value={poNumber}
+              disabled={fetching}
+              onChange={(e) => {
+                const num = e.target.value;
+                setPoNumber(num);
+                if (num) onFetchPO(num);
+                else { setPoId(""); setPo(null); setLines([]); }
+              }}
+            >
+              <option value="">
+                {poOptions.length ? "Select a PO…" : "No POs uploaded yet"}
+              </option>
+              {poOptions.map((p) => (
+                <option key={p.poNumber} value={p.poNumber}>
+                  {p.poNumber}{p.vendorName ? ` — ${p.vendorName}` : ""}
+                </option>
+              ))}
+            </select>
+            {fetching && <p className="mt-1 text-xs text-zinc-500">Fetching PO…</p>}
           </div>
         </div>
 
@@ -240,11 +272,15 @@ export default function GRNForm() {
                   <input type="date" className={input} value={l.mfgDate}
                     onChange={(e) => {
                       const v = e.target.value;
-                      patch(l.key, { mfgDate: v, expiryDate: l.shelfLifeMonths ? addMonths(v, Number(l.shelfLifeMonths)) : l.expiryDate });
+                      if (l.shelfLifeMonths)
+                        patch(l.key, { mfgDate: v, expiryDate: addMonths(v, Number(l.shelfLifeMonths)) });
+                      else if (l.expiryDate)
+                        patch(l.key, { mfgDate: v, shelfLifeMonths: monthsBetween(v, l.expiryDate) });
+                      else patch(l.key, { mfgDate: v });
                     }} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-zinc-600">Shelf Life (months)</label>
+                  <label className="block text-xs font-medium text-zinc-600">Shelf Life (months) <span className="text-zinc-400">(auto / editable)</span></label>
                   <input type="number" min="0" step="1" className={input} value={l.shelfLifeMonths} placeholder="e.g. 24"
                     onChange={(e) => {
                       const v = e.target.value;
@@ -253,7 +289,11 @@ export default function GRNForm() {
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-zinc-600">Expiry Date <span className="text-zinc-400">(auto / editable)</span></label>
-                  <input type="date" className={input} value={l.expiryDate} onChange={(e) => patch(l.key, { expiryDate: e.target.value })} />
+                  <input type="date" className={input} value={l.expiryDate}
+                    onChange={(e) => {
+                      const v = e.target.value;
+                      patch(l.key, { expiryDate: v, shelfLifeMonths: l.mfgDate ? monthsBetween(l.mfgDate, v) : l.shelfLifeMonths });
+                    }} />
                 </div>
               </div>
 

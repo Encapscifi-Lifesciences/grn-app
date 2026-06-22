@@ -20,6 +20,28 @@ export async function generateGrnRef(warehouseCode: string) {
   return { ok: true as const, grnRef: data as string };
 }
 
+// List uploaded (non-cancelled) POs for the GRN dropdown
+export async function listOpenPOs() {
+  const { user, role } = await getSessionRole();
+  if (!user || (role !== "warehouse" && role !== "admin"))
+    return { ok: false as const, error: "Not authorized." };
+
+  const supabase = await createServerSupabase();
+  const { data, error } = await supabase
+    .from("purchase_orders")
+    .select("po_number, po_date, cancelled, vendors(name)")
+    .or("cancelled.is.null,cancelled.eq.false")
+    .order("po_date", { ascending: false });
+
+  if (error) return { ok: false as const, error: error.message };
+
+  const pos = (data ?? []).map((p: any) => ({
+    poNumber: p.po_number as string,
+    vendorName: one(p.vendors)?.name ?? "",
+  }));
+  return { ok: true as const, pos };
+}
+
 // Fetch a PO header + all its line items for the GRN form
 export async function fetchPO(poNumber: string) {
   const supabase = await createServerSupabase();
