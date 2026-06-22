@@ -3,6 +3,8 @@ import { redirect } from "next/navigation";
 import { getSessionRole, type Role } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 
+export const dynamic = "force-dynamic";
+
 const PORTALS: {
   role: Role;
   href: string;
