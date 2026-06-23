@@ -81,7 +81,7 @@ export default function GRNForm() {
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const input =
-    "w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-base text-zinc-900 outline-none focus:border-zinc-900 sm:text-sm";
+    "w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-base text-zinc-900 outline-none focus:border-teal-600 sm:text-sm";
 
   // Load the list of uploaded POs for the dropdown
   useEffect(() => {
@@ -194,7 +194,7 @@ export default function GRNForm() {
           </div>
           <div>
             <label className="block text-sm font-medium text-zinc-700">GRN Reference</label>
-            <input className={`${input} bg-zinc-50 font-mono`} value={grnRef} readOnly placeholder="Auto-generated on warehouse select" />
+            <input className={`${input} bg-slate-100 font-mono`} value={grnRef} readOnly placeholder="Auto-generated on warehouse select" />
           </div>
           <div className="sm:col-span-2">
             <label className="block text-sm font-medium text-zinc-700">PO Number</label>
@@ -224,7 +224,7 @@ export default function GRNForm() {
 
         {/* Fetched PO details */}
         {po && (
-          <div className="mt-4 grid gap-2 rounded-lg bg-zinc-50 p-4 text-sm sm:grid-cols-2">
+          <div className="mt-4 grid gap-2 rounded-lg bg-slate-100 p-4 text-sm sm:grid-cols-2">
             <div><span className="text-zinc-500">Vendor:</span> <span className="font-medium">{po.vendorName || "—"}</span></div>
             <div><span className="text-zinc-500">Manufacturer:</span> <span className="font-medium">{po.manufacturer || "—"}</span></div>
             <div><span className="text-zinc-500">PO Date:</span> {po.poDate || "—"}</div>
@@ -360,7 +360,7 @@ export default function GRNForm() {
 
       {lines.length > 0 && (
         <div className="flex justify-end">
-          <button type="submit" disabled={busy} className="w-full rounded-lg bg-zinc-900 px-5 py-3 text-base font-medium text-white hover:bg-zinc-700 disabled:opacity-50 sm:w-auto sm:py-2.5 sm:text-sm">
+          <button type="submit" disabled={busy} className="w-full rounded-lg bg-teal-600 px-5 py-3 text-base font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto sm:py-2.5 sm:text-sm">
             {busy ? "Saving…" : "Submit GRN"}
           </button>
         </div>

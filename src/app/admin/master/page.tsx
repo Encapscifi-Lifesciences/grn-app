@@ -16,7 +16,7 @@ export default async function MasterDataPage() {
   ]);
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-100">
+    <div className="flex flex-1 flex-col bg-slate-50">
       <AppHeader title="Master Data" email={user.email} back />
       <main className="mx-auto w-full max-w-4xl flex-1 space-y-5 p-4 sm:p-6">
         <div className="flex items-center justify-between">

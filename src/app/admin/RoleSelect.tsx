@@ -29,7 +29,7 @@ export function RoleSelect({ userId, current }: { userId: string; current: strin
             if (res.ok) { setSaved(true); setTimeout(() => setSaved(false), 1500); }
           });
         }}
-        className="rounded-lg border border-zinc-300 px-2 py-1 text-sm outline-none focus:border-zinc-900 disabled:opacity-50"
+        className="rounded-lg border border-zinc-300 px-2 py-1 text-sm outline-none focus:border-teal-600 disabled:opacity-50"
       >
         {ROLES.map((r) => (
           <option key={r.value} value={r.value}>{r.label}</option>

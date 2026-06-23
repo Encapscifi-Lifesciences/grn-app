@@ -19,7 +19,7 @@ const PORTALS: {
     title: "Purchase Portal",
     desc: "Log purchase orders with multiple line items, or upload a PO PDF.",
     emoji: "🛒",
-    accent: "bg-indigo-50 text-indigo-600 ring-indigo-100",
+    accent: "bg-teal-50 text-teal-600 ring-teal-100",
   },
   {
     role: "warehouse",
@@ -27,7 +27,7 @@ const PORTALS: {
     title: "Warehouse Portal",
     desc: "Generate GRNs when goods arrive, with batch, expiry and photo proof.",
     emoji: "📦",
-    accent: "bg-amber-50 text-amber-600 ring-amber-100",
+    accent: "bg-emerald-50 text-emerald-600 ring-emerald-100",
   },
   {
     role: "warehouse",
@@ -35,7 +35,7 @@ const PORTALS: {
     title: "Inventory",
     desc: "Track received raw materials, view stock, and mark expired items.",
     emoji: "📊",
-    accent: "bg-emerald-50 text-emerald-600 ring-emerald-100",
+    accent: "bg-cyan-50 text-cyan-600 ring-cyan-100",
   },
   {
     role: "finance",
@@ -51,7 +51,7 @@ const PORTALS: {
     title: "User Management",
     desc: "Add team members and assign Purchase / Warehouse / Finance roles.",
     emoji: "👥",
-    accent: "bg-rose-50 text-rose-600 ring-rose-100",
+    accent: "bg-indigo-50 text-indigo-600 ring-indigo-100",
   },
   {
     role: "admin",
@@ -74,7 +74,7 @@ export default async function Home() {
   const visible = PORTALS.filter((p) => role === "admin" || role === p.role);
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-50">
+    <div className="flex flex-1 flex-col bg-slate-50">
       <AppHeader title="Encapscifi GRN" email={user.email} />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6">
@@ -83,8 +83,8 @@ export default async function Home() {
           className="relative overflow-hidden rounded-2xl shadow-sm ring-1 ring-black/5"
           style={{ backgroundImage: `url("${HERO_IMG}")`, backgroundSize: "cover", backgroundPosition: "center" }}
         >
-          <div className="bg-gradient-to-br from-zinc-900/90 via-zinc-900/75 to-indigo-900/70 px-6 py-10 sm:px-10 sm:py-12">
-            <div className="flex items-center gap-2 text-sm font-medium text-indigo-200">
+          <div className="bg-gradient-to-br from-slate-900/90 via-teal-900/80 to-emerald-900/70 px-6 py-10 sm:px-10 sm:py-12">
+            <div className="flex items-center gap-2 text-sm font-medium text-teal-200">
               <span>💊</span>
               <span>Encapscifi · Nutraceutical Manufacturing</span>
             </div>
@@ -120,7 +120,7 @@ export default async function Home() {
               <li key={p.href}>
                 <Link
                   href={p.href}
-                  className="group flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-zinc-100 transition-all hover:shadow-md hover:ring-zinc-200 sm:p-5"
+                  className="group flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-slate-200 transition-all hover:shadow-md hover:ring-teal-300 sm:p-5"
                 >
                   <span
                     className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl ring-1 ${p.accent}`}
@@ -135,7 +135,7 @@ export default async function Home() {
                       {p.desc}
                     </span>
                   </span>
-                  <span className="shrink-0 text-zinc-300 transition-transform group-hover:translate-x-0.5 group-hover:text-zinc-900">
+                  <span className="shrink-0 text-slate-300 transition-transform group-hover:translate-x-0.5 group-hover:text-teal-600">
                     →
                   </span>
                 </Link>

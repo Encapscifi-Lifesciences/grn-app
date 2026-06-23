@@ -24,7 +24,7 @@ export function StatusControl({ grnId, current }: { grnId: string; current: stri
           await updateStatus(grnId, next as (typeof OPTIONS)[number]["value"]);
         });
       }}
-      className="rounded-lg border border-zinc-300 px-2 py-1 text-sm outline-none focus:border-zinc-900 disabled:opacity-50"
+      className="rounded-lg border border-zinc-300 px-2 py-1 text-sm outline-none focus:border-teal-600 disabled:opacity-50"
     >
       {OPTIONS.map((o) => (
         <option key={o.value} value={o.value}>{o.label}</option>

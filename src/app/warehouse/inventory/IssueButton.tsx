@@ -24,7 +24,7 @@ export function IssueButton({
     return (
       <button
         onClick={() => setOpen(true)}
-        className="rounded-lg border border-zinc-300 px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
+        className="rounded-lg border border-zinc-300 px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-slate-50"
       >
         Issue
       </button>
@@ -60,7 +60,7 @@ export function IssueButton({
               else setErr(res.error);
             });
           }}
-          className="rounded bg-zinc-900 px-2 py-1 text-xs font-medium text-white disabled:opacity-50"
+          className="rounded bg-teal-600 px-2 py-1 text-xs font-medium text-white disabled:opacity-50"
         >
           {pending ? "…" : "Save"}
         </button>

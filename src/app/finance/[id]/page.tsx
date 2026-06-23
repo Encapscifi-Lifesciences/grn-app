@@ -42,7 +42,7 @@ export default async function GRNDetail({
   const audit = (auditData ?? []) as any[];
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-100 print:bg-white">
+    <div className="flex flex-1 flex-col bg-slate-50 print:bg-white">
       <div className="no-print">
         <AppHeader title={`GRN ${g.grn_ref}`} email={user.email} back />
       </div>
@@ -91,7 +91,7 @@ export default async function GRNDetail({
 
         <div className="overflow-x-auto rounded-xl bg-white shadow-sm print:shadow-none print:ring-1 print:ring-zinc-300">
           <table className="w-full min-w-[760px] text-sm print:min-w-0">
-            <thead className="bg-zinc-50 text-left text-zinc-500">
+            <thead className="bg-slate-100 text-left text-zinc-500">
               <tr>
                 <th className="px-3 py-2 font-medium">Item</th>
                 <th className="px-3 py-2 font-medium">Expected</th>

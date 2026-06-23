@@ -31,7 +31,7 @@ export default function LoginPage() {
       className="flex flex-1 items-center justify-center p-4"
       style={{
         backgroundImage:
-          'linear-gradient(to bottom right, rgba(24,24,27,0.92), rgba(49,46,129,0.85)), url("https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=1600&q=80")',
+          'linear-gradient(to bottom right, rgba(15,23,42,0.92), rgba(13,148,136,0.82)), url("https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=1600&q=80")',
         backgroundSize: "cover",
         backgroundPosition: "center",
       }}
@@ -54,7 +54,7 @@ export default function LoginPage() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-zinc-900 outline-none focus:border-zinc-900"
+          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-zinc-900 outline-none focus:border-teal-600"
           placeholder="you@encapscifi.com"
         />
 
@@ -66,7 +66,7 @@ export default function LoginPage() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-zinc-900 outline-none focus:border-zinc-900"
+          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-zinc-900 outline-none focus:border-teal-600"
           placeholder="••••••••"
         />
 
@@ -79,7 +79,7 @@ export default function LoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="mt-6 w-full rounded-lg bg-zinc-900 py-2.5 font-medium text-white transition-colors hover:bg-zinc-700 disabled:opacity-50"
+          className="mt-6 w-full rounded-lg bg-teal-600 py-2.5 font-medium text-white transition-colors hover:bg-teal-700 disabled:opacity-50"
         >
           {loading ? "Signing in…" : "Sign in"}
         </button>

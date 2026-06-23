@@ -10,9 +10,9 @@ export const dynamic = "force-dynamic";
 const one = (x: any) => (Array.isArray(x) ? x[0] : x);
 
 const STATUS_STYLE: Record<string, string> = {
-  pending_review: "bg-zinc-100 text-zinc-700",
+  pending_review: "bg-slate-200 text-slate-700",
   discrepancy: "bg-red-100 text-red-700",
-  reconciled: "bg-green-100 text-green-700",
+  reconciled: "bg-emerald-100 text-emerald-700",
 };
 
 export default async function FinancePage({
@@ -88,10 +88,10 @@ export default async function FinancePage({
   if (term) exportQs.set("q", q!.trim());
 
   const inp =
-    "rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-900";
+    "rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none focus:border-teal-600";
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-100">
+    <div className="flex flex-1 flex-col bg-slate-50">
       <AppHeader title="Finance · GRN Dashboard" email={user.email} back />
       <main className="mx-auto w-full max-w-6xl flex-1 space-y-4 p-4 sm:p-6">
         {/* Summary cards */}
@@ -101,7 +101,7 @@ export default async function FinancePage({
               key={c.k}
               href={c.k === "all" ? "/finance" : `/finance?status=${c.k}`}
               className={`rounded-xl bg-white p-4 shadow-sm ring-1 transition-shadow hover:shadow-md ${
-                active === c.k ? "ring-zinc-900" : "ring-transparent"
+                active === c.k ? "ring-teal-600" : "ring-transparent"
               }`}
             >
               <p className={`text-2xl font-bold ${c.color}`}>{c.n}</p>
@@ -130,20 +130,20 @@ export default async function FinancePage({
             <label className="block text-xs font-medium text-zinc-500">To</label>
             <input type="date" name="to" defaultValue={to ?? ""} className={inp} />
           </div>
-          <button type="submit" className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700">
+          <button type="submit" className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700">
             Apply
           </button>
           {(term || from || to) && (
             <Link
               href={active === "all" ? "/finance" : `/finance?status=${active}`}
-              className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-600 hover:bg-zinc-50"
+              className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-600 hover:bg-slate-50"
             >
               Clear
             </Link>
           )}
           <a
             href={`/api/export?${exportQs.toString()}`}
-            className="ml-auto rounded-lg bg-green-700 px-4 py-2 text-sm font-medium text-white hover:bg-green-800"
+            className="ml-auto rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
           >
             ⬇ Export CSV
           </a>
@@ -154,7 +154,7 @@ export default async function FinancePage({
             <p className="p-6 text-sm text-zinc-500">No GRNs match your filters.</p>
           ) : (
             <table className="w-full min-w-[900px] text-sm">
-              <thead className="bg-zinc-50 text-left text-zinc-500">
+              <thead className="bg-slate-100 text-left text-zinc-500">
                 <tr>
                   <th className="px-4 py-3 font-medium">GRN Ref</th>
                   <th className="px-4 py-3 font-medium">WH</th>
@@ -173,7 +173,7 @@ export default async function FinancePage({
                 {grns.map((g) => (
                   <tr
                     key={g.id}
-                    className={`border-t border-zinc-100 ${g.voided ? "bg-zinc-50 text-zinc-400" : ""}`}
+                    className={`border-t border-zinc-100 ${g.voided ? "bg-slate-100 text-zinc-400" : ""}`}
                   >
                     <td className={`px-4 py-3 font-mono font-medium ${g.voided ? "line-through" : "text-zinc-900"}`}>
                       {g.grn_ref}

@@ -13,11 +13,11 @@ export default async function AdminPage() {
   const users = (data ?? []) as { id: string; email: string; role: string }[];
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-100">
+    <div className="flex flex-1 flex-col bg-slate-50">
       <AppHeader title="User Management" email={user.email} back />
       <main className="mx-auto w-full max-w-3xl flex-1 space-y-4 p-4 sm:p-6">
         <div className="flex justify-end">
-          <Link href="/admin/master" className="rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700">
+          <Link href="/admin/master" className="rounded-lg bg-teal-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-teal-700">
             🗂️ Manage Master Data
           </Link>
         </div>
@@ -31,7 +31,7 @@ export default async function AdminPage() {
 
         <div className="overflow-hidden rounded-xl bg-white shadow-sm">
           <table className="w-full text-sm">
-            <thead className="bg-zinc-50 text-left text-zinc-500">
+            <thead className="bg-slate-100 text-left text-zinc-500">
               <tr>
                 <th className="px-4 py-3 font-medium">Email</th>
                 <th className="px-4 py-3 font-medium">Current Role</th>
@@ -46,7 +46,7 @@ export default async function AdminPage() {
                   <tr key={u.id} className="border-t border-zinc-100">
                     <td className="px-4 py-3 font-medium text-zinc-900">{u.email}</td>
                     <td className="px-4 py-3">
-                      <span className="rounded bg-zinc-100 px-2 py-0.5 text-xs font-medium uppercase tracking-wide">
+                      <span className="rounded bg-slate-50 px-2 py-0.5 text-xs font-medium uppercase tracking-wide">
                         {u.role}
                       </span>
                     </td>

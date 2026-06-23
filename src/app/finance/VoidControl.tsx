@@ -29,7 +29,7 @@ export function VoidControl({
             else setErr(r.error);
           })
         }
-        className="rounded-lg border border-zinc-300 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+        className="rounded-lg border border-zinc-300 px-2.5 py-1 text-xs font-medium text-zinc-700 hover:bg-slate-50 disabled:opacity-50"
       >
         Reinstate
       </button>
@@ -82,7 +82,7 @@ export function VoidControl({
             setReason("");
             setErr(null);
           }}
-          className="rounded border border-zinc-300 px-2 py-1 text-xs text-zinc-600 hover:bg-zinc-50"
+          className="rounded border border-zinc-300 px-2 py-1 text-xs text-zinc-600 hover:bg-slate-50"
         >
           Cancel
         </button>

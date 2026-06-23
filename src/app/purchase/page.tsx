@@ -34,7 +34,7 @@ export default async function PurchasePage() {
     Array.isArray(v) ? v[0]?.name : v?.name;
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-100">
+    <div className="flex flex-1 flex-col bg-slate-50">
       <AppHeader title="Purchase Portal" email={user.email} back />
       <main className="mx-auto w-full max-w-5xl flex-1 space-y-8 p-6">
         <section>
@@ -57,7 +57,7 @@ export default async function PurchasePage() {
               <p className="p-5 text-sm text-zinc-500">No purchase orders yet.</p>
             ) : (
               <table className="w-full text-sm">
-                <thead className="bg-zinc-50 text-left text-zinc-500">
+                <thead className="bg-slate-100 text-left text-zinc-500">
                   <tr>
                     <th className="px-5 py-3 font-medium">PO Number</th>
                     <th className="px-5 py-3 font-medium">Vendor</th>
@@ -69,7 +69,7 @@ export default async function PurchasePage() {
                 </thead>
                 <tbody>
                   {recent.map((po) => (
-                    <tr key={po.id} className={`border-t border-zinc-100 ${po.cancelled ? "bg-zinc-50 text-zinc-400" : ""}`}>
+                    <tr key={po.id} className={`border-t border-zinc-100 ${po.cancelled ? "bg-slate-100 text-zinc-400" : ""}`}>
                       <td className={`px-5 py-3 font-medium ${po.cancelled ? "text-zinc-400 line-through" : "text-zinc-900"}`}>
                         {po.po_number}
                       </td>

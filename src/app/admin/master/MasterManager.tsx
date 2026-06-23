@@ -56,7 +56,7 @@ export function MasterManager({ kind, rows }: { kind: Kind; rows: Row[] }) {
   const [adding, setAdding] = useState<Record<string, string>>({});
 
   const inp =
-    "w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-900";
+    "w-full rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none focus:border-teal-600";
 
   function run(fn: () => Promise<{ ok: boolean; error?: string }>, after?: () => void) {
     setErr(null);
@@ -96,7 +96,7 @@ export function MasterManager({ kind, rows }: { kind: Kind; rows: Row[] }) {
           type="button"
           disabled={pending}
           onClick={() => run(() => doSave(kind, null, adding), () => setAdding({}))}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+          className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700 disabled:opacity-50"
         >
           + Add
         </button>
@@ -104,7 +104,7 @@ export function MasterManager({ kind, rows }: { kind: Kind; rows: Row[] }) {
 
       <div className="overflow-x-auto">
         <table className="w-full text-sm">
-          <thead className="bg-zinc-50 text-left text-zinc-500">
+          <thead className="bg-slate-100 text-left text-zinc-500">
             <tr>
               {cfg.fields.map((f) => (
                 <th key={f.key} className="px-5 py-2 font-medium">{f.label}</th>
@@ -142,14 +142,14 @@ export function MasterManager({ kind, rows }: { kind: Kind; rows: Row[] }) {
                             type="button"
                             disabled={pending}
                             onClick={() => run(() => doSave(kind, row.id, draft), () => setEditId(null))}
-                            className="rounded bg-zinc-900 px-3 py-1 text-xs font-medium text-white hover:bg-zinc-700 disabled:opacity-50"
+                            className="rounded bg-teal-600 px-3 py-1 text-xs font-medium text-white hover:bg-teal-700 disabled:opacity-50"
                           >
                             Save
                           </button>
                           <button
                             type="button"
                             onClick={() => setEditId(null)}
-                            className="rounded border border-zinc-300 px-3 py-1 text-xs text-zinc-600 hover:bg-zinc-50"
+                            className="rounded border border-zinc-300 px-3 py-1 text-xs text-zinc-600 hover:bg-slate-50"
                           >
                             Cancel
                           </button>
@@ -164,7 +164,7 @@ export function MasterManager({ kind, rows }: { kind: Kind; rows: Row[] }) {
                               cfg.fields.forEach((f) => (d[f.key] = row[f.key] ?? ""));
                               setDraft(d);
                             }}
-                            className="rounded border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50"
+                            className="rounded border border-zinc-300 px-3 py-1 text-xs font-medium text-zinc-700 hover:bg-slate-50"
                           >
                             Edit
                           </button>

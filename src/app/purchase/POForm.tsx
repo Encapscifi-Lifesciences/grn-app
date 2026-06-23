@@ -127,12 +127,12 @@ export default function POForm({
   }
 
   const input =
-    "w-full rounded-lg border border-zinc-300 px-3 py-2 text-zinc-900 outline-none focus:border-zinc-900";
+    "w-full rounded-lg border border-zinc-300 px-3 py-2 text-zinc-900 outline-none focus:border-teal-600";
 
   return (
     <form onSubmit={onSubmit} className="rounded-xl bg-white p-5 shadow-sm sm:p-6">
       {/* PDF upload (Option B) */}
-      <div className="mb-6 rounded-lg border border-dashed border-zinc-300 bg-zinc-50 p-4">
+      <div className="mb-6 rounded-lg border border-dashed border-zinc-300 bg-slate-100 p-4">
         <label className="block text-sm font-medium text-zinc-700">
           Option B — Upload PO PDF (auto-fills the form below)
         </label>
@@ -183,7 +183,7 @@ export default function POForm({
       <div className="mt-6">
         <div className="mb-2 flex items-center justify-between">
           <h3 className="text-sm font-semibold text-zinc-900">Line Items</h3>
-          <button type="button" onClick={addLine} className="rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700">+ Add Line Item</button>
+          <button type="button" onClick={addLine} className="rounded-lg bg-teal-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-teal-700">+ Add Line Item</button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full min-w-[720px] border-collapse text-sm">
@@ -229,7 +229,7 @@ export default function POForm({
       )}
 
       <div className="mt-6 flex justify-end">
-        <button type="submit" disabled={busy} className="rounded-lg bg-zinc-900 px-5 py-2.5 font-medium text-white hover:bg-zinc-700 disabled:opacity-50">
+        <button type="submit" disabled={busy} className="rounded-lg bg-teal-600 px-5 py-2.5 font-medium text-white hover:bg-teal-700 disabled:opacity-50">
           {busy ? "Saving…" : "Save Purchase Order"}
         </button>
       </div>

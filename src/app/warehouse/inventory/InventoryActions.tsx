@@ -38,7 +38,7 @@ export function InventoryActions({
         <button
           disabled={pending}
           onClick={() => start(async () => { await setExpired(id, false); })}
-          className="rounded-lg border border-zinc-300 px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-zinc-50 disabled:opacity-50"
+          className="rounded-lg border border-zinc-300 px-2 py-1 text-xs font-medium text-zinc-700 hover:bg-slate-50 disabled:opacity-50"
         >
           Unmark
         </button>

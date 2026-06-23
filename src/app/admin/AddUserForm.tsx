@@ -42,7 +42,7 @@ export function AddUserForm() {
             required
             autoComplete="off"
             placeholder="person@example.com"
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-900"
+            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none focus:border-teal-600"
           />
         </label>
         <label className="flex flex-col gap-1 text-xs font-medium text-zinc-600">
@@ -54,7 +54,7 @@ export function AddUserForm() {
             minLength={6}
             autoComplete="new-password"
             placeholder="min 6 characters"
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-900"
+            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none focus:border-teal-600"
           />
         </label>
         <label className="flex flex-col gap-1 text-xs font-medium text-zinc-600">
@@ -62,7 +62,7 @@ export function AddUserForm() {
           <select
             name="role"
             defaultValue="warehouse"
-            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none focus:border-zinc-900"
+            className="rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none focus:border-teal-600"
           >
             {ROLES.map((r) => (
               <option key={r.value} value={r.value}>{r.label}</option>
@@ -72,7 +72,7 @@ export function AddUserForm() {
         <button
           type="submit"
           disabled={pending}
-          className="rounded-lg bg-zinc-900 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
+          className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-zinc-800 disabled:opacity-50"
         >
           {pending ? "Adding…" : "Add user"}
         </button>
