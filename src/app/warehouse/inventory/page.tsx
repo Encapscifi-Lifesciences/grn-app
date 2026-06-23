@@ -140,7 +140,11 @@ export default async function InventoryPage({
               </Link>
             ))}
           </div>
-          <Link href="/warehouse" className="rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700">+ New GRN</Link>
+          <div className="flex flex-wrap gap-2">
+            <a href="/api/reports?type=low-stock" className="rounded-lg bg-green-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-800">⬇ Low-stock CSV</a>
+            <a href="/api/reports?type=expiry&days=90" className="rounded-lg bg-green-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-green-800">⬇ Expiry CSV</a>
+            <Link href="/warehouse" className="rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700">+ New GRN</Link>
+          </div>
         </div>
 
         <div className="overflow-x-auto rounded-xl bg-white shadow-sm">

@@ -53,6 +53,14 @@ const PORTALS: {
     emoji: "👥",
     accent: "bg-rose-50 text-rose-600 ring-rose-100",
   },
+  {
+    role: "admin",
+    href: "/admin/master",
+    title: "Master Data",
+    desc: "Manage Vendors, Items and Units of Measure used across the app.",
+    emoji: "🗂️",
+    accent: "bg-violet-50 text-violet-600 ring-violet-100",
+  },
 ];
 
 // Warehouse / logistics hero photo (loaded via plain CSS background, no next/image config needed).

@@ -81,7 +81,7 @@ export default function GRNForm() {
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
 
   const input =
-    "w-full rounded-lg border border-zinc-300 px-3 py-2 text-zinc-900 outline-none focus:border-zinc-900";
+    "w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-base text-zinc-900 outline-none focus:border-zinc-900 sm:text-sm";
 
   // Load the list of uploaded POs for the dropdown
   useEffect(() => {
@@ -294,6 +294,9 @@ export default function GRNForm() {
                       const v = e.target.value;
                       patch(l.key, { expiryDate: v, shelfLifeMonths: l.mfgDate ? monthsBetween(l.mfgDate, v) : l.shelfLifeMonths });
                     }} />
+                  {l.mfgDate && l.expiryDate && l.expiryDate <= l.mfgDate && (
+                    <p className="mt-1 text-xs text-red-600">Expiry must be after mfg date.</p>
+                  )}
                 </div>
               </div>
 
@@ -357,7 +360,7 @@ export default function GRNForm() {
 
       {lines.length > 0 && (
         <div className="flex justify-end">
-          <button type="submit" disabled={busy} className="rounded-lg bg-zinc-900 px-5 py-2.5 font-medium text-white hover:bg-zinc-700 disabled:opacity-50">
+          <button type="submit" disabled={busy} className="w-full rounded-lg bg-zinc-900 px-5 py-3 text-base font-medium text-white hover:bg-zinc-700 disabled:opacity-50 sm:w-auto sm:py-2.5 sm:text-sm">
             {busy ? "Saving…" : "Submit GRN"}
           </button>
         </div>

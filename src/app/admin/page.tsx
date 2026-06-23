@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireRole, createServerSupabase } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { RoleSelect } from "./RoleSelect";
@@ -15,6 +16,11 @@ export default async function AdminPage() {
     <div className="flex flex-1 flex-col bg-zinc-100">
       <AppHeader title="User Management" email={user.email} back />
       <main className="mx-auto w-full max-w-3xl flex-1 space-y-4 p-4 sm:p-6">
+        <div className="flex justify-end">
+          <Link href="/admin/master" className="rounded-lg bg-zinc-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-zinc-700">
+            🗂️ Manage Master Data
+          </Link>
+        </div>
         <AddUserForm />
 
         {error && (

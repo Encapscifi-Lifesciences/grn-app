@@ -122,6 +122,18 @@ export async function createGRN(input: GRNInput) {
   if (!input.poId) return { ok: false as const, error: "Fetch a PO first." };
   if (!input.lines?.length) return { ok: false as const, error: "No line items to record." };
 
+  // ---- Validation guards ----
+  for (const l of input.lines) {
+    const actual = Number(l.actualQty);
+    const damaged = Number(l.damagedQty) || 0;
+    if (actual < 0) return { ok: false as const, error: "Actual quantity cannot be negative." };
+    if (damaged < 0) return { ok: false as const, error: "Damaged quantity cannot be negative." };
+    if (damaged > actual)
+      return { ok: false as const, error: "Damaged quantity cannot exceed the actual quantity received." };
+    if (l.mfgDate && l.expiryDate && l.expiryDate <= l.mfgDate)
+      return { ok: false as const, error: "Expiry date must be after the manufacturing date." };
+  }
+
   const discrepancy = input.lines.some(
     (l) => Number(l.actualQty) !== Number(l.expectedQty) || Number(l.damagedQty) > 0
   );
