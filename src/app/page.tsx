@@ -10,38 +10,54 @@ const PORTALS: {
   href: string;
   title: string;
   desc: string;
+  emoji: string;
+  accent: string; // tailwind classes for the icon tile
 }[] = [
   {
     role: "purchase",
     href: "/purchase",
     title: "Purchase Portal",
     desc: "Log purchase orders with multiple line items, or upload a PO PDF.",
+    emoji: "🛒",
+    accent: "bg-indigo-50 text-indigo-600 ring-indigo-100",
   },
   {
     role: "warehouse",
     href: "/warehouse",
     title: "Warehouse Portal",
     desc: "Generate GRNs when goods arrive, with batch, expiry and photo proof.",
+    emoji: "📦",
+    accent: "bg-amber-50 text-amber-600 ring-amber-100",
   },
   {
     role: "warehouse",
     href: "/warehouse/inventory",
     title: "Inventory",
     desc: "Track received raw materials, view stock, and mark expired items.",
+    emoji: "📊",
+    accent: "bg-emerald-50 text-emerald-600 ring-emerald-100",
   },
   {
     role: "finance",
     href: "/finance",
     title: "Finance Portal",
     desc: "Review GRNs, set reconciliation status, and export for Odoo.",
+    emoji: "💰",
+    accent: "bg-sky-50 text-sky-600 ring-sky-100",
   },
   {
     role: "admin",
     href: "/admin",
     title: "User Management",
     desc: "Add team members and assign Purchase / Warehouse / Finance roles.",
+    emoji: "👥",
+    accent: "bg-rose-50 text-rose-600 ring-rose-100",
   },
 ];
+
+// Warehouse / logistics hero photo (loaded via plain CSS background, no next/image config needed).
+const HERO_IMG =
+  "https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=1600&q=80";
 
 export default async function Home() {
   const { user, role } = await getSessionRole();
@@ -50,40 +66,79 @@ export default async function Home() {
   const visible = PORTALS.filter((p) => role === "admin" || role === p.role);
 
   return (
-    <div className="flex flex-1 flex-col bg-zinc-100">
+    <div className="flex flex-1 flex-col bg-zinc-50">
       <AppHeader title="Encapscifi GRN" email={user.email} />
-      <main className="mx-auto w-full max-w-4xl flex-1 p-6">
-        <p className="mb-6 text-sm text-zinc-500">
-          Signed in as <span className="font-medium">{user.email}</span> ·{" "}
-          <span className="rounded bg-zinc-200 px-2 py-0.5 font-medium uppercase tracking-wide">
-            {role ?? "no role"}
-          </span>
-        </p>
+
+      <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6">
+        {/* Hero banner with background image + gradient overlay */}
+        <section
+          className="relative overflow-hidden rounded-2xl shadow-sm ring-1 ring-black/5"
+          style={{ backgroundImage: `url("${HERO_IMG}")`, backgroundSize: "cover", backgroundPosition: "center" }}
+        >
+          <div className="bg-gradient-to-br from-zinc-900/90 via-zinc-900/75 to-indigo-900/70 px-6 py-10 sm:px-10 sm:py-12">
+            <div className="flex items-center gap-2 text-sm font-medium text-indigo-200">
+              <span>💊</span>
+              <span>Encapscifi · Nutraceutical Manufacturing</span>
+            </div>
+            <h1 className="mt-3 text-2xl font-bold tracking-tight text-white sm:text-3xl">
+              Goods Received Note Management
+            </h1>
+            <p className="mt-2 max-w-xl text-sm text-zinc-200 sm:text-base">
+              Track purchase orders, log incoming goods with batch &amp; expiry
+              proof, and reconcile everything for Odoo — all in one place.
+            </p>
+            <p className="mt-5 inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-medium text-white ring-1 ring-white/20 backdrop-blur">
+              👤 {user.email}
+              <span className="rounded-full bg-white/20 px-2 py-0.5 uppercase tracking-wide">
+                {role ?? "no role"}
+              </span>
+            </p>
+          </div>
+        </section>
+
+        {/* Sections as a clean vertical list */}
+        <h2 className="mb-3 mt-8 px-1 text-xs font-semibold uppercase tracking-wider text-zinc-500">
+          Your Workspaces
+        </h2>
 
         {visible.length === 0 ? (
-          <div className="rounded-xl bg-white p-6 text-zinc-600 shadow-sm">
-            Your account has no portal access yet. Ask an administrator to set
+          <div className="rounded-xl bg-white p-6 text-zinc-600 shadow-sm ring-1 ring-zinc-100">
+            🔒 Your account has no portal access yet. Ask an administrator to set
             your role.
           </div>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <ul className="space-y-3">
             {visible.map((p) => (
-              <Link
-                key={p.href}
-                href={p.href}
-                className="rounded-xl bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
-              >
-                <h2 className="text-lg font-semibold text-zinc-900">
-                  {p.title}
-                </h2>
-                <p className="mt-2 text-sm text-zinc-500">{p.desc}</p>
-                <span className="mt-4 inline-block text-sm font-medium text-zinc-900">
-                  Open →
-                </span>
-              </Link>
+              <li key={p.href}>
+                <Link
+                  href={p.href}
+                  className="group flex items-center gap-4 rounded-xl bg-white p-4 shadow-sm ring-1 ring-zinc-100 transition-all hover:shadow-md hover:ring-zinc-200 sm:p-5"
+                >
+                  <span
+                    className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl text-2xl ring-1 ${p.accent}`}
+                  >
+                    {p.emoji}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-base font-semibold text-zinc-900">
+                      {p.title}
+                    </span>
+                    <span className="mt-0.5 block text-sm text-zinc-500">
+                      {p.desc}
+                    </span>
+                  </span>
+                  <span className="shrink-0 text-zinc-300 transition-transform group-hover:translate-x-0.5 group-hover:text-zinc-900">
+                    →
+                  </span>
+                </Link>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
+
+        <p className="mt-10 text-center text-xs text-zinc-400">
+          🏭 Encapscifi GRN · Bangalore · Secure internal system
+        </p>
       </main>
     </div>
   );

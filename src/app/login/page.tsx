@@ -27,13 +27,24 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center bg-zinc-100 p-4">
+    <div
+      className="flex flex-1 items-center justify-center p-4"
+      style={{
+        backgroundImage:
+          'linear-gradient(to bottom right, rgba(24,24,27,0.92), rgba(49,46,129,0.85)), url("https://images.unsplash.com/photo-1553413077-190dd305871c?auto=format&fit=crop&w=1600&q=80")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
+    >
       <form
         onSubmit={onSubmit}
-        className="w-full max-w-sm rounded-xl bg-white p-8 shadow-sm"
+        className="w-full max-w-sm rounded-2xl bg-white/95 p-8 shadow-xl ring-1 ring-black/5 backdrop-blur"
       >
-        <h1 className="text-xl font-semibold text-zinc-900">Encapscifi GRN</h1>
-        <p className="mt-1 text-sm text-zinc-500">Sign in to continue</p>
+        <div className="flex items-center gap-2 text-2xl">💊📦</div>
+        <h1 className="mt-3 text-xl font-bold text-zinc-900">Encapscifi GRN</h1>
+        <p className="mt-1 text-sm text-zinc-500">
+          🔐 Sign in to the Goods Received Note system
+        </p>
 
         <label className="mt-6 block text-sm font-medium text-zinc-700">
           Email
