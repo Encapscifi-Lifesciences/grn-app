@@ -16,7 +16,10 @@ export default async function AdminPage() {
     <div className="flex flex-1 flex-col bg-slate-50">
       <AppHeader title="User Management" email={user.email} back />
       <main className="mx-auto w-full max-w-3xl flex-1 space-y-4 p-4 sm:p-6">
-        <div className="flex justify-end">
+        <div className="flex flex-wrap justify-end gap-2">
+          <Link href="/admin/valuation" className="rounded-lg bg-teal-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-teal-700">
+            💹 Inventory Valuation
+          </Link>
           <Link href="/admin/master" className="rounded-lg bg-teal-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-teal-700">
             🗂️ Manage Master Data
           </Link>

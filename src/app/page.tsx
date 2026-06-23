@@ -61,6 +61,14 @@ const PORTALS: {
     emoji: "🗂️",
     accent: "bg-violet-50 text-violet-600 ring-violet-100",
   },
+  {
+    role: "admin",
+    href: "/admin/valuation",
+    title: "Inventory Valuation",
+    desc: "WAC & FEFO costing, stock value, expiry value-at-risk, COGS.",
+    emoji: "💹",
+    accent: "bg-teal-50 text-teal-600 ring-teal-100",
+  },
 ];
 
 // Warehouse / logistics hero photo (loaded via plain CSS background, no next/image config needed).
