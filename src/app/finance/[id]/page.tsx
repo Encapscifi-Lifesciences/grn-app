@@ -50,6 +50,13 @@ export default async function GRNDetail({
         <div className="no-print flex items-center justify-between">
           <Link href="/finance" className="text-sm text-blue-600 underline">← Back to dashboard</Link>
           <div className="flex items-center gap-2">
+            <Link
+              href={`/grn/${g.id}`}
+              target="_blank"
+              className="rounded-lg bg-teal-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-teal-700"
+            >
+              ⬇ GRN PDF
+            </Link>
             <PrintButton />
             <VoidControl grnId={g.id} voided={g.voided} />
           </div>

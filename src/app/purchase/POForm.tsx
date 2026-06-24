@@ -81,14 +81,15 @@ export default function POForm({
       if (data.error) { setMessage({ ok: false, text: data.error }); setParsing(false); return; }
       if (data.poNumber) setPoNumber(data.poNumber);
       if (data.vendorName) setVendorName(data.vendorName);
+      if (data.poDate) setPoDate(data.poDate);
       if (Array.isArray(data.lines) && data.lines.length > 0) {
         setLines(
-          data.lines.map((l: { itemName: string; expectedQty: string; uom: string }) => ({
+          data.lines.map((l: { itemName: string; expectedQty: string; uom: string; rate?: string }) => ({
             key: ++lineCounter,
             itemName: l.itemName,
             expectedQty: String(l.expectedQty),
             uomId: aliasUom(l.uom),
-            rate: "",
+            rate: l.rate ? String(l.rate) : "",
           }))
         );
         setMessage({ ok: true, text: `Extracted ${data.lines.length} item(s) — please review before saving.` });

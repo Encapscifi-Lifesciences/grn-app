@@ -182,5 +182,5 @@ export async function createGRN(input: GRNInput) {
   revalidatePath("/finance");
   revalidatePath("/warehouse");
   revalidatePath("/warehouse/inventory");
-  return { ok: true as const, grnRef: input.grnRef, status };
+  return { ok: true as const, id: grn.id as string, grnRef: input.grnRef, status };
 }

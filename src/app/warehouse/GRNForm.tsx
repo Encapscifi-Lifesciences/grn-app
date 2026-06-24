@@ -2,6 +2,7 @@
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { getSupabaseBrowser } from "@/lib/supabaseClient";
 import { generateGrnRef, fetchPO, createGRN, listOpenPOs } from "./actions";
@@ -79,6 +80,7 @@ export default function GRNForm() {
   const [busy, setBusy] = useState(false);
   const [fetching, setFetching] = useState(false);
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
+  const [lastGrn, setLastGrn] = useState<{ id: string; ref: string } | null>(null);
 
   const input =
     "w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-base text-zinc-900 outline-none focus:border-teal-600 sm:text-sm";
@@ -170,6 +172,7 @@ export default function GRNForm() {
     setBusy(false);
     if (res.ok) {
       setMsg({ ok: true, text: `GRN ${res.grnRef} saved (status: ${res.status}).` });
+      setLastGrn({ id: res.id, ref: res.grnRef });
       setPoNumber(""); setPoId(""); setPo(null); setInvoiceNo("");
       setChallanNo(""); setAttachmentUrl(""); setLines([]);
       setWarehouseCode(""); setGrnRef("");
@@ -356,6 +359,19 @@ export default function GRNForm() {
 
       {msg && (
         <p className={`rounded-lg px-3 py-2 text-sm ${msg.ok ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`}>{msg.text}</p>
+      )}
+
+      {lastGrn && (
+        <div className="flex items-center justify-between rounded-lg border border-teal-200 bg-teal-50 px-4 py-3 text-sm">
+          <span className="text-teal-800">GRN <span className="font-mono font-medium">{lastGrn.ref}</span> created.</span>
+          <Link
+            href={`/grn/${lastGrn.id}`}
+            target="_blank"
+            className="rounded-lg bg-teal-600 px-3 py-1.5 font-medium text-white hover:bg-teal-700"
+          >
+            ⬇ Download GRN PDF
+          </Link>
+        </div>
       )}
 
       {lines.length > 0 && (
