@@ -73,23 +73,12 @@ export default async function GRNDocument({
       <div className="mx-auto max-w-3xl bg-white text-zinc-800 shadow-sm print:max-w-none print:shadow-none">
         {/* Header band */}
         <header className="flex items-start justify-between gap-4 bg-zinc-50 px-10 py-7 print:bg-zinc-50">
-          <div className="flex items-center gap-3">
-            <svg viewBox="0 0 100 100" className="h-12 w-12" aria-hidden>
-              <polygon
-                points="50,4 91,27 91,73 50,96 9,73 9,27"
-                fill="none"
-                stroke="#0f172a"
-                strokeWidth="7"
-              />
-              <polygon points="50,30 70,42 70,64 50,76 30,64 30,42" fill="#0f172a" />
-            </svg>
-            <div className="leading-tight">
-              <div className="text-sm font-bold tracking-tight text-zinc-900">
-                Encapscifi
-              </div>
-              <div className="text-xs text-zinc-500">Lifesciences</div>
-            </div>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/encapscifi-logo.jpg"
+            alt="Encapscifi Lifesciences"
+            className="h-10 w-auto print:h-10"
+          />
           <div className="text-right text-[11px] leading-snug text-zinc-600">
             <div className="font-semibold text-zinc-900">{COMPANY.name}</div>
             {COMPANY.addressLines.map((l) => (
