@@ -24,6 +24,25 @@ export async function changeRole(userId: string, role: Role) {
   return { ok: true as const };
 }
 
+export async function deleteUser(userId: string) {
+  const { user, role: myRole } = await getSessionRole();
+  if (!user || myRole !== "admin")
+    return { ok: false as const, error: "Not authorized." };
+  if (userId === user.id)
+    return { ok: false as const, error: "You cannot remove your own account." };
+
+  const admin = getSupabaseAdmin();
+
+  // Remove the profile row first (in case there's no ON DELETE CASCADE), then the
+  // auth user. Both run on the service-role client, bypassing RLS.
+  await admin.from("profiles").delete().eq("id", userId);
+  const { error } = await admin.auth.admin.deleteUser(userId);
+  if (error) return { ok: false as const, error: error.message };
+
+  revalidatePath("/admin");
+  return { ok: true as const };
+}
+
 export async function createUser(formData: FormData) {
   const { user, role: myRole } = await getSessionRole();
   if (!user || myRole !== "admin")

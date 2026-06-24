@@ -3,6 +3,7 @@ import { requireRole, createServerSupabase } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { RoleSelect } from "./RoleSelect";
 import { AddUserForm } from "./AddUserForm";
+import { DeleteUserButton } from "./DeleteUserButton";
 
 export const dynamic = "force-dynamic";
 
@@ -39,11 +40,12 @@ export default async function AdminPage() {
                 <th className="px-4 py-3 font-medium">Email</th>
                 <th className="px-4 py-3 font-medium">Current Role</th>
                 <th className="px-4 py-3 font-medium">Change Role</th>
+                <th className="px-4 py-3 font-medium">Actions</th>
               </tr>
             </thead>
             <tbody>
               {users.length === 0 ? (
-                <tr><td colSpan={3} className="px-4 py-4 text-zinc-500">No users found.</td></tr>
+                <tr><td colSpan={4} className="px-4 py-4 text-zinc-500">No users found.</td></tr>
               ) : (
                 users.map((u) => (
                   <tr key={u.id} className="border-t border-zinc-100">
@@ -55,6 +57,9 @@ export default async function AdminPage() {
                     </td>
                     <td className="px-4 py-3">
                       <RoleSelect userId={u.id} current={u.role} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <DeleteUserButton userId={u.id} email={u.email} isSelf={u.email === user.email} />
                     </td>
                   </tr>
                 ))
