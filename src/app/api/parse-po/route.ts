@@ -74,20 +74,45 @@ export async function POST(request: Request) {
       vendorName = vMatch ? vMatch[1].split(/\n/)[0].trim() : "";
     }
 
-    // ---- Line items: "Coconut MCT oil 700.00 kg 560.0000 0.00% ..." ----
-    // name  qty  uom  [unit-price]
+    // ---- Line items ----
+    // Odoo prints the items table tab-delimited, e.g.
+    //   "Coconut MCT oil \t 700.00 kg \t 560.0000 \t 0.00% \t IGST 18% \t ₹ ..."
+    // so column 0 = description, column 1 = "qty uom", column 2 = unit price.
+    // For non-tabbed PDFs we fall back to a "name qty uom [rate]" regex.
     const uomWord =
       "(kg|g|gram|grams|kilogram|kilograms|l|ltr|liter|litre|liters|litres|ml|unit|units|no|nos|pc|pcs)";
+    const qtyUomRe = new RegExp(`^(\\d+(?:[.,]\\d+)?)\\s*${uomWord}\\b`, "i");
     const lineRe = new RegExp(
       `^(.{2,}?)\\s+(\\d+(?:\\.\\d+)?)\\s*${uomWord}\\b(?:\\s+(\\d+(?:\\.\\d+)?))?`,
       "i"
     );
+    const num = (s: string) => s.replace(/,/g, "").trim();
+    const isHeaderish = (s: string) =>
+      /total|subtotal|amount|gst\b|tax|description|untaxed|qty|unit price/i.test(s);
+
     const lines: { itemName: string; expectedQty: string; uom: string; rate: string }[] = [];
-    for (const raw of allLines) {
-      const m = raw.match(lineRe);
+    const rawLines = text.split(/\r?\n/); // keep tabs (don't pre-trim)
+    for (const raw of rawLines) {
+      // Tab-delimited path
+      if (raw.includes("\t")) {
+        const cells = raw.split(/\t/).map((c) => c.trim());
+        const name = cells[0]?.replace(/^\d+[).\s]+/, "").trim();
+        const qm = cells[1]?.match(qtyUomRe);
+        if (name && qm && !isHeaderish(name)) {
+          lines.push({
+            itemName: name,
+            expectedQty: num(qm[1]),
+            uom: qm[2].toLowerCase(),
+            rate: cells[2] ? num(cells[2]) : "",
+          });
+          continue;
+        }
+      }
+      // Space-delimited fallback
+      const m = raw.trim().match(lineRe);
       if (m) {
-        const name = m[1].replace(/^\d+[).\s]+/, "").trim(); // strip leading "1) "
-        if (name && !/total|subtotal|amount|gst|tax|description|untaxed/i.test(name)) {
+        const name = m[1].replace(/^\d+[).\s]+/, "").trim();
+        if (name && !isHeaderish(name)) {
           lines.push({
             itemName: name,
             expectedQty: m[2],
