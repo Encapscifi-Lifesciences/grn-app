@@ -151,6 +151,11 @@ export default function GRNForm() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    const missingBatch = lines.find((l) => Number(l.actualQty) > 0 && !l.batchNo.trim());
+    if (missingBatch) {
+      setMsg({ ok: false, text: `Batch / Lot No. is required for "${missingBatch.itemName}".` });
+      return;
+    }
     setBusy(true);
     setMsg(null);
     const res = await createGRN({
@@ -267,8 +272,11 @@ export default function GRNForm() {
                   <input type="number" step="any" min="0" className={input} value={l.actualQty} onChange={(e) => patch(l.key, { actualQty: e.target.value })} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-zinc-600">Batch / Lot No.</label>
-                  <input className={input} value={l.batchNo} onChange={(e) => patch(l.key, { batchNo: e.target.value })} />
+                  <label className="block text-xs font-medium text-zinc-600">Batch / Lot No. <span className="text-red-500">*</span></label>
+                  <input className={input} value={l.batchNo} required={Number(l.actualQty) > 0} onChange={(e) => patch(l.key, { batchNo: e.target.value })} />
+                  {Number(l.actualQty) > 0 && !l.batchNo.trim() && (
+                    <p className="mt-1 text-xs text-red-600">Required for traceability.</p>
+                  )}
                 </div>
                 <div>
                   <label className="block text-xs font-medium text-zinc-600">Mfg Date</label>

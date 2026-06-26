@@ -127,6 +127,8 @@ export async function createGRN(input: GRNInput) {
     const actual = Number(l.actualQty);
     const damaged = Number(l.damagedQty) || 0;
     if (actual < 0) return { ok: false as const, error: "Actual quantity cannot be negative." };
+    if (actual > 0 && !String(l.batchNo ?? "").trim())
+      return { ok: false as const, error: "Batch / Lot No. is required for every received item (traceability)." };
     if (damaged < 0) return { ok: false as const, error: "Damaged quantity cannot be negative." };
     if (damaged > actual)
       return { ok: false as const, error: "Damaged quantity cannot exceed the actual quantity received." };
