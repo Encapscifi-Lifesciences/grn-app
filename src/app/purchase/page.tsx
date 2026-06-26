@@ -34,7 +34,7 @@ export default async function PurchasePage() {
     Array.isArray(v) ? v[0]?.name : v?.name;
 
   return (
-    <div className="flex flex-1 flex-col bg-slate-50">
+    <div className="flex flex-1 flex-col app-bg">
       <AppHeader title="Purchase Portal" email={user.email} back />
       <main className="mx-auto w-full max-w-5xl flex-1 space-y-8 p-6">
         <section>

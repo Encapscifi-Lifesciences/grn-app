@@ -54,7 +54,7 @@ export default function LoginPage() {
           required
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-zinc-900 outline-none focus:border-teal-600"
+          className="field mt-1"
           placeholder="you@encapscifi.com"
         />
 
@@ -66,7 +66,7 @@ export default function LoginPage() {
           required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="mt-1 w-full rounded-lg border border-zinc-300 px-3 py-2 text-zinc-900 outline-none focus:border-teal-600"
+          className="field mt-1"
           placeholder="••••••••"
         />
 
@@ -76,11 +76,7 @@ export default function LoginPage() {
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="mt-6 w-full rounded-lg bg-teal-600 py-2.5 font-medium text-white transition-colors hover:bg-teal-700 disabled:opacity-50"
-        >
+        <button type="submit" disabled={loading} className="btn-primary mt-6 w-full py-2.5">
           {loading ? "Signing in…" : "Sign in"}
         </button>
       </form>

@@ -82,8 +82,7 @@ export default function GRNForm() {
   const [msg, setMsg] = useState<{ ok: boolean; text: string } | null>(null);
   const [lastGrn, setLastGrn] = useState<{ id: string; ref: string } | null>(null);
 
-  const input =
-    "w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-base text-zinc-900 outline-none focus:border-teal-600 sm:text-sm";
+  const input = "field";
 
   // Load the list of uploaded POs for the dropdown
   useEffect(() => {
@@ -190,7 +189,14 @@ export default function GRNForm() {
   return (
     <form onSubmit={onSubmit} className="space-y-6">
       {/* Header */}
-      <div className="rounded-xl bg-white p-5 shadow-sm">
+      <div className="card p-5 sm:p-6">
+        <div className="mb-4 flex items-center gap-3 border-b border-slate-100 pb-4">
+          <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-teal-50 text-lg ring-1 ring-teal-100">📥</span>
+          <div>
+            <h2 className="text-sm font-semibold text-slate-900">Receipt Details</h2>
+            <p className="text-xs text-slate-500">Select the warehouse and the purchase order being received.</p>
+          </div>
+        </div>
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <label className="block text-sm font-medium text-zinc-700">Warehouse</label>
@@ -259,12 +265,12 @@ export default function GRNForm() {
       {/* Line items */}
       {lines.length > 0 && (
         <div className="space-y-4">
-          <h3 className="text-sm font-semibold text-zinc-900">Received Items ({lines.length})</h3>
+          <h3 className="section-title px-1">Received Items ({lines.length})</h3>
           {lines.map((l) => (
-            <div key={l.key} className="rounded-xl bg-white p-5 shadow-sm">
-              <div className="mb-3 flex items-center justify-between">
-                <span className="font-medium text-zinc-900">{l.itemName}</span>
-                <span className="text-sm text-zinc-500">Expected: {l.expectedQty} {l.uomCode}</span>
+            <div key={l.key} className="card p-5">
+              <div className="mb-3 flex items-center justify-between border-b border-slate-100 pb-3">
+                <span className="font-semibold text-slate-900">{l.itemName}</span>
+                <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-xs font-medium text-slate-600">Expected: {l.expectedQty} {l.uomCode}</span>
               </div>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div>
@@ -350,7 +356,7 @@ export default function GRNForm() {
 
       {/* Form-level attachment */}
       {lines.length > 0 && (
-        <div className="rounded-xl bg-white p-5 shadow-sm">
+        <div className="card p-5">
           <label className="block text-sm font-medium text-zinc-700">Delivery Challan Photo</label>
           <input type="file" accept="image/*" capture="environment" className="mt-1 text-sm"
             onChange={async (e) => {
@@ -383,9 +389,9 @@ export default function GRNForm() {
       )}
 
       {lines.length > 0 && (
-        <div className="flex justify-end">
-          <button type="submit" disabled={busy} className="w-full rounded-lg bg-teal-600 px-5 py-3 text-base font-medium text-white hover:bg-teal-700 disabled:opacity-50 sm:w-auto sm:py-2.5 sm:text-sm">
-            {busy ? "Saving…" : "Submit GRN"}
+        <div className="sticky bottom-0 z-10 -mx-4 flex justify-end border-t border-slate-200 bg-white/80 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-2xl sm:border sm:px-5 sm:shadow-sm">
+          <button type="submit" disabled={busy} className="btn-primary w-full px-5 py-3 text-base sm:w-auto sm:py-2.5 sm:text-sm">
+            {busy ? "Saving…" : "Submit GRN ✓"}
           </button>
         </div>
       )}

@@ -23,7 +23,7 @@ export default async function ValuationPage() {
   ];
 
   return (
-    <div className="flex flex-1 flex-col bg-slate-50">
+    <div className="flex flex-1 flex-col app-bg">
       <AppHeader title="Inventory Valuation" email={user.email} back />
       <main className="mx-auto w-full max-w-6xl flex-1 space-y-5 p-4 sm:p-6">
         <div className="flex flex-wrap items-center justify-between gap-3">

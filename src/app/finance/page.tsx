@@ -98,11 +98,10 @@ export default async function FinancePage({
   if (to) exportQs.set("to", to);
   if (term) exportQs.set("q", q!.trim());
 
-  const inp =
-    "rounded-lg border border-zinc-300 px-3 py-2 text-sm text-zinc-900 outline-none focus:border-teal-600";
+  const inp = "field";
 
   return (
-    <div className="flex flex-1 flex-col bg-slate-50">
+    <div className="flex flex-1 flex-col app-bg">
       <AppHeader title="Finance · GRN Dashboard" email={user.email} back />
       <main className="mx-auto w-full max-w-6xl flex-1 space-y-4 p-4 sm:p-6">
         {/* Summary cards */}
@@ -111,18 +110,18 @@ export default async function FinancePage({
             <Link
               key={c.k}
               href={c.k === "all" ? "/finance" : `/finance?status=${c.k}`}
-              className={`rounded-xl bg-white p-4 shadow-sm ring-1 transition-shadow hover:shadow-md ${
-                active === c.k ? "ring-teal-600" : "ring-transparent"
+              className={`rounded-2xl bg-white p-4 shadow-sm ring-1 transition-all hover:-translate-y-0.5 hover:shadow-md ${
+                active === c.k ? "ring-2 ring-teal-500" : "ring-slate-200/70"
               }`}
             >
               <p className={`text-2xl font-bold ${c.color}`}>{c.n}</p>
-              <p className="text-xs text-zinc-500">{c.label}</p>
+              <p className="text-xs font-medium text-zinc-500">{c.label}</p>
             </Link>
           ))}
         </div>
 
         {/* Search + date filters */}
-        <form method="get" className="flex flex-wrap items-end gap-2 rounded-xl bg-white p-3 shadow-sm">
+        <form method="get" className="flex flex-wrap items-end gap-2 rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200/70">
           {active !== "all" && <input type="hidden" name="status" value={active} />}
           <div className="flex-1 min-w-[180px]">
             <label className="block text-xs font-medium text-zinc-500">Search</label>
@@ -141,31 +140,26 @@ export default async function FinancePage({
             <label className="block text-xs font-medium text-zinc-500">To</label>
             <input type="date" name="to" defaultValue={to ?? ""} className={inp} />
           </div>
-          <button type="submit" className="rounded-lg bg-teal-600 px-4 py-2 text-sm font-medium text-white hover:bg-teal-700">
-            Apply
-          </button>
+          <button type="submit" className="btn-primary">Apply</button>
           {(term || from || to) && (
             <Link
               href={active === "all" ? "/finance" : `/finance?status=${active}`}
-              className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-600 hover:bg-slate-50"
+              className="btn-secondary"
             >
               Clear
             </Link>
           )}
-          <a
-            href={`/api/export?${exportQs.toString()}`}
-            className="ml-auto rounded-lg bg-emerald-600 px-4 py-2 text-sm font-medium text-white hover:bg-emerald-700"
-          >
+          <a href={`/api/export?${exportQs.toString()}`} className="btn-success ml-auto">
             ⬇ Export CSV
           </a>
         </form>
 
-        <div className="overflow-x-auto rounded-xl bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/70">
           {grns.length === 0 ? (
-            <p className="p-6 text-sm text-zinc-500">No GRNs match your filters.</p>
+            <p className="p-8 text-center text-sm text-zinc-500">No GRNs match your filters.</p>
           ) : (
-            <table className="w-full min-w-[900px] text-sm">
-              <thead className="bg-slate-100 text-left text-zinc-500">
+            <table className="w-full min-w-[960px] text-sm">
+              <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
                 <tr>
                   <th className="px-4 py-3 font-medium">GRN Ref</th>
                   <th className="px-4 py-3 font-medium">WH</th>
@@ -185,7 +179,7 @@ export default async function FinancePage({
                 {grns.map((g) => (
                   <tr
                     key={g.id}
-                    className={`border-t border-zinc-100 ${g.voided ? "bg-slate-100 text-zinc-400" : ""}`}
+                    className={`border-t border-slate-100 transition-colors ${g.voided ? "bg-slate-100 text-zinc-400" : "hover:bg-teal-50/40"}`}
                   >
                     <td className={`px-4 py-3 font-mono font-medium ${g.voided ? "line-through" : "text-zinc-900"}`}>
                       {g.grn_ref}

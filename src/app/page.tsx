@@ -82,7 +82,7 @@ export default async function Home() {
   const visible = PORTALS.filter((p) => role === "admin" || role === p.role);
 
   return (
-    <div className="flex flex-1 flex-col bg-slate-50">
+    <div className="flex flex-1 flex-col app-bg">
       <AppHeader title="Encapscifi GRN" email={user.email} />
 
       <main className="mx-auto w-full max-w-3xl flex-1 px-4 py-8 sm:px-6">

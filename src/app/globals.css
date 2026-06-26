@@ -1,8 +1,9 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f4f7f9;
+  --foreground: #0f172a;
+  color-scheme: light;
 }
 
 @theme inline {
@@ -12,17 +13,79 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* Use the Geist font that layout.tsx actually loads (was incorrectly Arial). */
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, -apple-system,
+    "Segoe UI", Roboto, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: rgba(13, 148, 136, 0.18);
+}
+
+@layer components {
+  /* Premium app canvas — soft layered brand glow over a slate base. */
+  .app-bg {
+    background:
+      radial-gradient(1100px 520px at 100% -8%, rgba(13, 148, 136, 0.10), transparent 60%),
+      radial-gradient(900px 460px at -8% 4%, rgba(16, 185, 129, 0.07), transparent 55%),
+      linear-gradient(180deg, #f8fafc 0%, #eef2f6 100%);
+    background-attachment: fixed;
+  }
+
+  /* Surfaces */
+  .card {
+    @apply rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/70;
+  }
+  .card-hover {
+    @apply transition-all hover:-translate-y-0.5 hover:shadow-md hover:ring-teal-300;
+  }
+
+  /* Buttons — each variant is self-contained (no cross-class @apply). */
+  .btn,
+  .btn-primary,
+  .btn-success,
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+  .btn-primary {
+    @apply bg-teal-600 text-white shadow-sm hover:bg-teal-700;
+  }
+  .btn-success {
+    @apply bg-emerald-600 text-white shadow-sm hover:bg-emerald-700;
+  }
+  .btn-secondary {
+    @apply border border-slate-300 bg-white text-slate-700 hover:border-teal-300 hover:bg-teal-50 hover:text-teal-700;
+  }
+
+  /* Form fields */
+  .field {
+    @apply w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-base text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 sm:text-sm;
+  }
+  .field-label {
+    @apply block text-xs font-medium text-slate-600;
+  }
+
+  /* Pills */
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  /* Misc */
+  .section-title {
+    @apply text-xs font-semibold uppercase tracking-wider text-slate-500;
+  }
+  .link-teal {
+    @apply font-medium text-teal-700 transition-colors hover:text-teal-800 hover:underline;
+  }
+  .table-wrap {
+    @apply overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/70;
+  }
 }
 
 @media print {

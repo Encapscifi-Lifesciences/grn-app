@@ -14,7 +14,7 @@ export default async function AdminPage() {
   const users = (data ?? []) as { id: string; email: string; role: string }[];
 
   return (
-    <div className="flex flex-1 flex-col bg-slate-50">
+    <div className="flex flex-1 flex-col app-bg">
       <AppHeader title="User Management" email={user.email} back />
       <main className="mx-auto w-full max-w-3xl flex-1 space-y-4 p-4 sm:p-6">
         <div className="flex flex-wrap justify-end gap-2">

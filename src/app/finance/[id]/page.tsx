@@ -42,7 +42,7 @@ export default async function GRNDetail({
   const audit = (auditData ?? []) as any[];
 
   return (
-    <div className="flex flex-1 flex-col bg-slate-50 print:bg-white">
+    <div className="flex flex-1 flex-col app-bg print:bg-white">
       <div className="no-print">
         <AppHeader title={`GRN ${g.grn_ref}`} email={user.email} back />
       </div>

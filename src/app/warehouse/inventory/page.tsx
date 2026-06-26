@@ -112,22 +112,22 @@ export default async function InventoryPage({
   const td = "px-4 py-3";
 
   return (
-    <div className="flex flex-1 flex-col bg-slate-50">
+    <div className="flex flex-1 flex-col app-bg">
       <AppHeader title="Warehouse · Inventory" email={user.email} back />
       <main className="mx-auto w-full max-w-6xl flex-1 space-y-4 p-4 sm:p-6">
         {/* Alerts summary */}
         <div className="grid gap-3 sm:grid-cols-3">
-          <Link href="/warehouse/inventory?view=expiring" className="rounded-xl bg-white p-4 shadow-sm">
-            <p className="text-2xl font-semibold text-red-600">{count30}</p>
-            <p className="text-sm text-zinc-500">Expiring within 30 days</p>
+          <Link href="/warehouse/inventory?view=expiring" className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200/70 transition-all hover:-translate-y-0.5 hover:shadow-md">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-red-50 text-xl ring-1 ring-red-100">⏰</span>
+            <div><p className="text-2xl font-semibold text-red-600">{count30}</p><p className="text-xs text-zinc-500">Expiring within 30 days</p></div>
           </Link>
-          <Link href="/warehouse/inventory?view=stock" className="rounded-xl bg-white p-4 shadow-sm">
-            <p className="text-2xl font-semibold text-amber-600">{lowItems.length}</p>
-            <p className="text-sm text-zinc-500">Items low on stock</p>
+          <Link href="/warehouse/inventory?view=stock" className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200/70 transition-all hover:-translate-y-0.5 hover:shadow-md">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-amber-50 text-xl ring-1 ring-amber-100">📉</span>
+            <div><p className="text-2xl font-semibold text-amber-600">{lowItems.length}</p><p className="text-xs text-zinc-500">Items low on stock</p></div>
           </Link>
-          <Link href="/warehouse/inventory?view=expired" className="rounded-xl bg-white p-4 shadow-sm">
-            <p className="text-2xl font-semibold text-zinc-700">{expiredBatches.length}</p>
-            <p className="text-sm text-zinc-500">Expired batches</p>
+          <Link href="/warehouse/inventory?view=expired" className="flex items-center gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200/70 transition-all hover:-translate-y-0.5 hover:shadow-md">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-slate-100 text-xl ring-1 ring-slate-200">🗑️</span>
+            <div><p className="text-2xl font-semibold text-zinc-700">{expiredBatches.length}</p><p className="text-xs text-zinc-500">Expired batches</p></div>
           </Link>
         </div>
 
@@ -141,17 +141,17 @@ export default async function InventoryPage({
             ))}
           </div>
           <div className="flex flex-wrap gap-2">
-            <a href="/api/reports?type=low-stock" className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700">⬇ Low-stock CSV</a>
-            <a href="/api/reports?type=expiry&days=90" className="rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-emerald-700">⬇ Expiry CSV</a>
-            <Link href="/warehouse" className="rounded-lg bg-teal-600 px-3 py-1.5 text-sm font-medium text-white hover:bg-teal-700">+ New GRN</Link>
+            <a href="/api/reports?type=low-stock" className="btn-success">⬇ Low-stock CSV</a>
+            <a href="/api/reports?type=expiry&days=90" className="btn-success">⬇ Expiry CSV</a>
+            <Link href="/warehouse" className="btn-primary">+ New GRN</Link>
           </div>
         </div>
 
-        <div className="overflow-x-auto rounded-xl bg-white shadow-sm">
+        <div className="overflow-x-auto rounded-2xl bg-white shadow-sm ring-1 ring-slate-200/70">
           {/* STOCK BALANCE */}
           {active === "stock" && (
             <table className="w-full min-w-[640px] text-sm">
-              <thead className="bg-slate-100 text-left text-zinc-500">
+              <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
                 <tr><th className={th}>Raw Material</th><th className={th}>On Hand</th><th className={th}>Min Level (reorder)</th><th className={th}>Status</th></tr>
               </thead>
               <tbody>
@@ -171,7 +171,7 @@ export default async function InventoryPage({
           {/* BATCHES */}
           {active === "batches" && (
             <table className="w-full min-w-[900px] text-sm">
-              <thead className="bg-slate-100 text-left text-zinc-500">
+              <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
                 <tr><th className={th}>Raw Material</th><th className={th}>Batch</th><th className={th}>Recd</th><th className={th}>Issued</th><th className={th}>Available</th><th className={th}>Expiry</th><th className={th}>GRN</th><th className={th}>Issue</th><th className={th}>Expired?</th></tr>
               </thead>
               <tbody>
@@ -199,7 +199,7 @@ export default async function InventoryPage({
           {/* FEFO */}
           {active === "fefo" && (
             <table className="w-full min-w-[860px] text-sm">
-              <thead className="bg-slate-100 text-left text-zinc-500">
+              <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
                 <tr><th className={th}>#</th><th className={th}>Raw Material</th><th className={th}>Batch</th><th className={th}>Available</th><th className={th}>Expiry</th><th className={th}>Days Left</th><th className={th}>Alert</th><th className={th}>Issue</th></tr>
               </thead>
               <tbody>
@@ -234,7 +234,7 @@ export default async function InventoryPage({
           {/* EXPIRING SOON */}
           {active === "expiring" && (
             <table className="w-full min-w-[760px] text-sm">
-              <thead className="bg-slate-100 text-left text-zinc-500">
+              <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
                 <tr><th className={th}>Raw Material</th><th className={th}>Batch</th><th className={th}>Available</th><th className={th}>Expiry</th><th className={th}>Days Left</th><th className={th}>Window</th></tr>
               </thead>
               <tbody>
@@ -260,7 +260,7 @@ export default async function InventoryPage({
           {/* EXPIRED */}
           {active === "expired" && (
             <table className="w-full min-w-[760px] text-sm">
-              <thead className="bg-slate-100 text-left text-zinc-500">
+              <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
                 <tr><th className={th}>Raw Material</th><th className={th}>Batch</th><th className={th}>Qty</th><th className={th}>Expiry</th><th className={th}>GRN</th><th className={th}>Action</th></tr>
               </thead>
               <tbody>
