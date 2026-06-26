@@ -38,6 +38,22 @@ const PORTALS: {
     accent: "bg-cyan-50 text-cyan-600 ring-cyan-100",
   },
   {
+    role: "warehouse",
+    href: "/trace",
+    title: "Batch Traceability",
+    desc: "Trace any batch / lot from receipt to consumption — recall readiness.",
+    emoji: "🔎",
+    accent: "bg-rose-50 text-rose-600 ring-rose-100",
+  },
+  {
+    role: "purchase",
+    href: "/purchase/fulfillment",
+    title: "PO Fulfillment",
+    desc: "Track received vs ordered quantity per PO; spot partials & over-receipts.",
+    emoji: "📋",
+    accent: "bg-amber-50 text-amber-600 ring-amber-100",
+  },
+  {
     role: "finance",
     href: "/finance",
     title: "Finance Portal",

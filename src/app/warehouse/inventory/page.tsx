@@ -141,6 +141,7 @@ export default async function InventoryPage({
             ))}
           </div>
           <div className="flex flex-wrap gap-2">
+            <Link href="/trace" className="btn-secondary">🔎 Trace Batch</Link>
             <a href="/api/reports?type=low-stock" className="btn-success">⬇ Low-stock CSV</a>
             <a href="/api/reports?type=expiry&days=90" className="btn-success">⬇ Expiry CSV</a>
             <Link href="/warehouse" className="btn-primary">+ New GRN</Link>

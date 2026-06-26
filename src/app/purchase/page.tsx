@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { requireRole, createServerSupabase } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import POForm from "./POForm";
@@ -37,6 +38,9 @@ export default async function PurchasePage() {
     <div className="flex flex-1 flex-col app-bg">
       <AppHeader title="Purchase Portal" email={user.email} back />
       <main className="mx-auto w-full max-w-5xl flex-1 space-y-8 p-6">
+        <div className="flex justify-end">
+          <Link href="/purchase/fulfillment" className="btn-secondary shadow-sm">📋 PO Fulfillment →</Link>
+        </div>
         <section>
           <h2 className="mb-3 text-lg font-semibold text-zinc-900">
             New Purchase Order

@@ -149,7 +149,8 @@ export default async function FinancePage({
               Clear
             </Link>
           )}
-          <a href={`/api/export?${exportQs.toString()}`} className="btn-success ml-auto">
+          <Link href="/trace" className="btn-secondary ml-auto">🔎 Trace Batch</Link>
+          <a href={`/api/export?${exportQs.toString()}`} className="btn-success">
             ⬇ Export CSV
           </a>
         </form>
