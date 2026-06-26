@@ -48,7 +48,7 @@ export default async function GRNDetail({
       </div>
       <main className="mx-auto w-full max-w-4xl flex-1 space-y-6 p-4 sm:p-6 print:p-0">
         <div className="no-print flex items-center justify-between">
-          <Link href="/finance" className="text-sm text-blue-600 underline">← Back to dashboard</Link>
+          <Link href="/finance" className="text-sm font-medium text-teal-700 hover:text-teal-800 hover:underline">← Back to dashboard</Link>
           <div className="flex items-center gap-2">
             <Link
               href={`/grn/${g.id}`}
@@ -128,7 +128,7 @@ export default async function GRNDetail({
                     <td className="px-3 py-2">{li.damaged_qty > 0 ? `${li.damaged_qty} (${li.damage_reason ?? ""})` : "—"}</td>
                     <td className="px-3 py-2 no-print">
                       {li.expiry_proof_url ? (
-                        <a href={li.expiry_proof_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">view</a>
+                        <a href={li.expiry_proof_url} target="_blank" rel="noopener noreferrer" className="font-medium text-teal-700 hover:text-teal-800 hover:underline">view</a>
                       ) : "—"}
                     </td>
                   </tr>

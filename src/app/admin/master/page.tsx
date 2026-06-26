@@ -23,7 +23,7 @@ export default async function MasterDataPage() {
           <p className="text-sm text-zinc-500">
             Manage the dropdown lists used across the app. Entries in use can&apos;t be deleted.
           </p>
-          <Link href="/admin" className="text-sm text-blue-600 underline">User Management →</Link>
+          <Link href="/admin" className="text-sm font-medium text-teal-700 hover:text-teal-800 hover:underline">User Management →</Link>
         </div>
 
         <MasterManager kind="vendor" rows={(vendors.data ?? []) as never} />

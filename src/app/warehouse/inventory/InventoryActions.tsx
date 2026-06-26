@@ -33,7 +33,7 @@ export function InventoryActions({
     return (
       <div className="flex items-center gap-2">
         {proof && (
-          <a href={proof} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 underline">proof</a>
+          <a href={proof} target="_blank" rel="noopener noreferrer" className="text-xs font-medium text-teal-700 hover:text-teal-800 hover:underline">proof</a>
         )}
         <button
           disabled={pending}

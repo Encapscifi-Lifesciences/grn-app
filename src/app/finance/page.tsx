@@ -4,6 +4,7 @@ import { requireRole, createServerSupabase } from "@/lib/supabase/server";
 import { AppHeader } from "@/components/AppHeader";
 import { StatusControl } from "./StatusControl";
 import { VoidControl } from "./VoidControl";
+import { daysToExpiry, expiryLevel, EXPIRY_BADGE, todayUtc } from "@/lib/expiry";
 
 export const dynamic = "force-dynamic";
 
@@ -28,13 +29,23 @@ export default async function FinancePage({
   const { data } = await supabase
     .from("grns")
     .select(
-      "id, grn_ref, warehouse_code, grn_date, status, voided, invoice_no, challan_no, attachment_url, purchase_orders(po_number, vendors(name)), grn_line_items(id)"
+      "id, grn_ref, warehouse_code, grn_date, status, voided, invoice_no, challan_no, attachment_url, purchase_orders(po_number, vendors(name)), grn_line_items(id, expiry_date)"
     )
     .order("created_at", { ascending: false });
 
   const all = (data ?? []) as any[];
   const vendorOf = (g: any) => one(one(g.purchase_orders)?.vendors)?.name ?? "";
   const poOf = (g: any) => one(g.purchase_orders)?.po_number ?? "";
+
+  // Most-urgent expiry badge across a GRN's line items (soonest wins).
+  const today = todayUtc();
+  const expiryBadgeOf = (g: any) => {
+    const dls = (g.grn_line_items ?? [])
+      .map((li: any) => daysToExpiry(li.expiry_date, today))
+      .filter((d: number | null): d is number => d !== null);
+    if (!dls.length) return null;
+    return EXPIRY_BADGE[expiryLevel(Math.min(...dls))];
+  };
 
   // Summary counts (ignore search/date filters, reflect whole dataset)
   const counts = {
@@ -162,6 +173,7 @@ export default async function FinancePage({
                   <th className="px-4 py-3 font-medium">Invoice No</th>
                   <th className="px-4 py-3 font-medium">Date</th>
                   <th className="px-4 py-3 font-medium">Items</th>
+                  <th className="px-4 py-3 font-medium">Expiry</th>
                   <th className="px-4 py-3 font-medium">Photo</th>
                   <th className="px-4 py-3 font-medium">Status</th>
                   <th className="px-4 py-3 font-medium">Set Status</th>
@@ -184,8 +196,18 @@ export default async function FinancePage({
                     <td className="px-4 py-3">{g.grn_date}</td>
                     <td className="px-4 py-3">{g.grn_line_items?.length ?? 0}</td>
                     <td className="px-4 py-3">
+                      {(() => {
+                        const b = expiryBadgeOf(g);
+                        return b ? (
+                          <span className={`rounded px-2 py-0.5 text-xs font-medium ${b.cls}`}>{b.text}</span>
+                        ) : (
+                          <span className="text-zinc-400">—</span>
+                        );
+                      })()}
+                    </td>
+                    <td className="px-4 py-3">
                       {g.attachment_url ? (
-                        <a href={g.attachment_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline">view</a>
+                        <a href={g.attachment_url} target="_blank" rel="noopener noreferrer" className="font-medium text-teal-700 hover:text-teal-800 hover:underline">view</a>
                       ) : "—"}
                     </td>
                     <td className="px-4 py-3">
@@ -204,7 +226,7 @@ export default async function FinancePage({
                       <VoidControl grnId={g.id} voided={g.voided} />
                     </td>
                     <td className="px-4 py-3">
-                      <Link href={`/finance/${g.id}`} className="text-blue-600 underline">details</Link>
+                      <Link href={`/finance/${g.id}`} className="font-medium text-teal-700 hover:text-teal-800 hover:underline">details</Link>
                     </td>
                   </tr>
                 ))}

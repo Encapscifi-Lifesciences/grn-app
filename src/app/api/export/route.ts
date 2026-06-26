@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createServerSupabase, getSessionRole } from "@/lib/supabase/server";
+import { daysToExpiry, expiryStatusLabel, todayUtc } from "@/lib/expiry";
 
 export const dynamic = "force-dynamic";
 
@@ -8,26 +9,6 @@ const one = (x: any) => (Array.isArray(x) ? x[0] : x);
 function csvCell(v: unknown): string {
   const s = v === null || v === undefined ? "" : String(v);
   return /[",\n]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
-}
-
-const DAY = 86400000;
-
-// Whole days from today (UTC midnight) until the given YYYY-MM-DD expiry date.
-function daysToExpiry(expiry: string | null | undefined, today: Date): number | null {
-  if (!expiry) return null;
-  const t = new Date(expiry).getTime();
-  if (Number.isNaN(t)) return null;
-  return Math.round((t - today.getTime()) / DAY);
-}
-
-// Expiry status label aligned with the warehouse inventory windows (≤30 / ≤60 / ≤90).
-function expiryStatus(dl: number | null): string {
-  if (dl === null) return "";
-  if (dl < 0) return "Expired";
-  if (dl <= 30) return "Expiring ≤30d";
-  if (dl <= 60) return "Expiring ≤60d";
-  if (dl <= 90) return "Expiring ≤90d";
-  return "OK";
 }
 
 // CSV export of GRN line items, filtered by status / date range / search. Odoo-friendly.
@@ -78,7 +59,7 @@ export async function GET(request: Request) {
     return true;
   });
 
-  const today = new Date(new Date().toISOString().slice(0, 10) + "T00:00:00Z");
+  const today = todayUtc();
 
   const header = [
     "GRN Ref", "Warehouse", "GRN Date", "Status", "Voided", "PO Number", "Vendor",
@@ -103,7 +84,7 @@ export async function GET(request: Request) {
         g.grn_ref, g.warehouse_code, g.grn_date, g.status, voided, po, vendor,
         g.invoice_no, g.challan_no, one(li.items)?.name ?? "", one(li.uoms)?.code ?? "",
         li.expected_qty, li.actual_qty, li.batch_no, li.mfg_date, li.expiry_date,
-        dl ?? "", expiryStatus(dl),
+        dl ?? "", expiryStatusLabel(dl),
         li.expired ? "YES" : "NO", li.damaged_qty, li.damage_reason,
       ].map(csvCell).join(","));
     }
